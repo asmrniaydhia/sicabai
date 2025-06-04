@@ -1,10 +1,12 @@
-<ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+<ul class="navbar-nav sidebar sidebar-dark accordion" id="accordionSidebar" style="background-color: #67AE6E; background-image: linear-gradient(180deg, #67AE6E 10%, #328E6E 100%); background-size: cover;">
     <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
-        <div class="sidebar-brand-icon rotate-n-15">
-            <i class="fas fa-laugh-wink"></i>
+        <div class="sidebar-brand-icon">
+            <img src="{{ asset('images/simbol-sicabai(1).png') }}" alt="Logo Sicabai" style="height: 40px;">
         </div>
-        <div class="sidebar-brand-text mx-3">SB Admin <sup>2</sup></div>
+        <div class="sidebar-brand-text mx-3">SiCabai</div>
     </a>
+
+
 
     <hr class="sidebar-divider my-0">
     <li class="nav-item {{ (request()->is('admin/dashboard') || request()->is('dashboard')) ? 'active' : '' }}">
