@@ -23,14 +23,15 @@
                 @include('layouts.topbar') <!-- Topbar -->
 
                 <main>
-                    {{ $slot }} <!-- Main content here -->
+                    {{-- {{ $slot }} <!-- Main content here --> --}}
+                    @yield('content')
                 </main>
             </div>
 
             @include('layouts.footer') <!-- Footer -->
         </div>
     </div>
-
+    @yield('scripts')
     <!-- Ensure the JS paths are correct -->
     <script src="{{ asset('sbadmin2/vendor/jquery/jquery.min.js') }}"></script>
     <script src="{{ asset('sbadmin2/vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>

@@ -12,7 +12,7 @@
     <li class="nav-item {{ (request()->is('admin/dashboard') || request()->is('dashboard')) ? 'active' : '' }}">
         <a class="nav-link" href="{{ Auth::user()->usertype == 'admin' ? route('admin.dashboard') : route('dashboard') }}">
             <i class="fas fa-fw fa-tachometer-alt"></i>
-            <span>Dashboard</span>
+            <span>Beranda</span>
         </a>
     </li>
 

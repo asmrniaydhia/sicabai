@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Controllers\Controller;
+use App\Models\User;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 
 class AdminController extends Controller
 {
@@ -12,8 +13,11 @@ class AdminController extends Controller
      */
     public function index()
     {
-        return view('admin.dashboard');
+        $totalUsers = User::count(); // Semua user
+        $totalAdmins = User::where('usertype', 'admin')->count(); // Jika pakai kolom 'role'
+        $totalRegularUsers = User::where('usertype', 'user')->count(); // Misalnya user biasa
 
+        return view('admin.dashboard', compact('totalUsers', 'totalAdmins', 'totalRegularUsers'));
     }
 
     /**
