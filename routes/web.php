@@ -20,7 +20,10 @@ Route::middleware('auth')->group(function () {
 require __DIR__.'/auth.php';
 
 Route::middleware(['auth', 'userMiddleware'])->group(function(){
-    Route::get('dashboard', [UserController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard', [UserController::class, 'index'])->name('dashboard');
+    Route::get('/edukasi', [UserController::class, 'edukasi'])->name('edukasi');
+    Route::get('/diagnosa', [UserController::class, 'diagnosa'])->name('diagnosa');
+    Route::get('/riwayat', [UserController::class, 'riwayat'])->name('riwayat');
 });
 
 Route::middleware(['auth', 'adminMiddleware'])->group(function(){

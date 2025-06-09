@@ -12,7 +12,19 @@ class UserController extends Controller
      */
     public function index()
     {
-        return view('dashboard');
+        return view('user.dashboard');
+    }
+
+    public function edukasi() {
+        return view('user.edukasi');
+    }
+
+    public function diagnosa() {
+        return view('user.diagnosa');
+    }
+
+    public function riwayat() {
+        return view('user.riwayat');
     }
 
     /**

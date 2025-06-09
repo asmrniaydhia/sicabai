@@ -12,12 +12,12 @@
     <li class="nav-item {{ (request()->is('admin/dashboard') || request()->is('dashboard')) ? 'active' : '' }}">
         <a class="nav-link" href="{{ Auth::user()->usertype == 'admin' ? route('admin.dashboard') : route('dashboard') }}">
             <i class="fas fa-fw fa-tachometer-alt"></i>
-            <span>Beranda</span>
+            <span>Dashboard</span>
         </a>
     </li>
 
     <hr class="sidebar-divider">
-    <div class="sidebar-heading">Interface</div>
+    <div class="sidebar-heading">IDENTIFIKASI</div>
 
     <!-- Add additional sidebar items as needed -->
 
