@@ -33,18 +33,28 @@ class RegisteredUserController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'usertype' => ['required', 'string', 'in:user,bengkel'], // Tambah validasi ini
         ]);
 
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'usertype' => $request->usertype, // Tambah ini
         ]);
 
         event(new Registered($user));
 
         Auth::login($user);
 
-        return redirect(route('dashboard', absolute: false));
+        if ($user->usertype == 'bengkel') {
+            if ($user->bengkel) {
+                $jenisBengkel = $user->bengkel->jenis_bengkel;
+                return $jenisBengkel === 'service' 
+                    ? redirect()->route('bengkelService.dashboard')
+                    : redirect()->route('tambalBan.dashboard');
+            }
+            return redirect()->route('bengkel.input-toko');
+        } 
     }
 }

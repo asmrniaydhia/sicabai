@@ -448,9 +448,17 @@
         {{-- @include('layouts.sidebar') <!-- Sidebar --> --}}
 
         @if(Auth::user()->usertype == 'admin')
-            @include('layouts.sidebar_admin')
-        @else
-            @include('layouts.sidebar_user')
+            @include('admin.sidebar_admin')
+        @elseif(Auth::user()->usertype == 'user')
+            @include('user.sidebar_user')
+        @elseif(Auth::user()->usertype == 'bengkel') 
+            @if (Auth::user()->bengkel) 
+                @if (Auth::user()->bengkel->jenis_bengkel === 'service') 
+                    @include('bengkelService.sidebar_bengkelService')
+                @elseif (Auth::user()->bengkel->jenis_bengkel === 'tambal_ban') 
+                    @include('tambalBan.sidebar_tambalBan')
+                @endif
+            @endif
         @endif
 
         <div id="content-wrapper" class="d-flex flex-column">

@@ -24,7 +24,7 @@
     </style>
 </head>
 
-<body style="background-color: #67AE6E; background-image: linear-gradient(180deg, #67AE6E 10%, #328E6E 100%); background-size: cover;">
+<body style="background-color: #ae8267; background-image: linear-gradient(180deg, #c68a35 10%, #cc3737 100%); background-size: cover;">
 
     <div class="container d-flex justify-content-center align-items-center" style="min-height: 100vh;">
         <!-- Outer Row -->
@@ -38,7 +38,7 @@
                         <div class="row">
                             <!-- Logo di kiri -->
                             <div class="col-lg-6 d-none d-lg-block bg-login-image text-center align-content-center">
-                                <img src="{{ asset('images/logo-sicabai.png') }}" alt="Logo Sicabai" class="img-fluid" style="max-width: 400px; margin-left: 40px">
+                                <img src="{{ asset('images/lg.png') }}" alt="Logo MotoBengkel" class="img-fluid" style="max-width: 400px; margin-left: 40px">
                             </div>
 
                             <!-- Form di kanan -->
@@ -51,6 +51,24 @@
                                     <!-- Form Registrasi -->
                                     <form method="POST" action="{{ route('register') }}" class="user">
                                         @csrf
+
+                                        <!-- Radio Button untuk Peran -->
+                                        <div class="form-group text-center">
+                                            <label class="text-gray-900 mb-2 d-block">Daftar Sebagai:</label>
+                                            <div class="d-flex justify-content-center">
+                                                <div class="form-check mr-4">
+                                                    <input class="form-check-input" type="radio" name="usertype" id="usertype_user" value="user" {{ old('usertype', 'user') == 'user' ? 'checked' : '' }} required>
+                                                    <label class="form-check-label" for="usertype_user">Pelanggan</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="radio" name="usertype" id="usertype_bengkel" value="bengkel" {{ old('usertype') == 'bengkel' ? 'checked' : '' }} required>
+                                                    <label class="form-check-label" for="usertype_bengkel">Bengkel</label>
+                                                </div>
+                                            </div>
+                                            @error('usertype')
+                                                <span class="text-danger">{{ $message }}</span>
+                                            @enderror
+                                        </div>
 
                                         <!-- Input Nama -->
                                         <div class="form-group">
@@ -79,14 +97,14 @@
                                         </div>
 
                                         <!-- Tombol Daftar -->
-                                        <button type="submit" class="btn btn-user btn-block" style="background-color: #328E6E; color:white">Daftar Akun</button>
+                                        <button type="submit" class="btn btn-user btn-block" style="background-color: #F97316; color:white">Daftar Akun</button>
 
                                     </form>
                                     <!-- End of Form Registrasi -->
 
                                     <hr>
                                     <div class="text-center">
-                                        <p class="small">Sudah punya akun? <a href="{{ route('login') }}" style="color: #BF9264; font-weight: 700">Masuk</a></p>
+                                        <p class="small">Sudah punya akun? <a href="{{ route('login') }}" style="color: #EF4444; font-weight: 700">Masuk</a></p>
                                     </div>
                                 </div>
                             </div>

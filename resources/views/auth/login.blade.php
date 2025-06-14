@@ -21,7 +21,7 @@
     </style>
 </head>
 
-<body style="background-color: #67AE6E; background-image: linear-gradient(180deg, #67AE6E 10%, #328E6E 100%); background-size: cover;">
+<body style="background-color: #ae8267; background-image: linear-gradient(180deg, #c68a35 10%, #cc3737 100%); background-size: cover;">
 
     <div class="container d-flex justify-content-center align-items-center" style="min-height: 100vh;">
 
@@ -35,7 +35,7 @@
                         <!-- Nested Row within Card Body -->
                         <div class="row">
                             <div class="col-lg-6 d-none d-lg-block bg-login-image text-center align-content-center">
-                                <img src="{{ asset('images/logo-sicabai.png') }}" alt="Logo Sicabai" class="img-fluid" style="max-width: 400px; margin-left: 40px">
+                                <img src="{{ asset('images/lg.png') }}" alt="Logo Sicabai" class="img-fluid" style="max-width: 400px; margin-left: 40px">
                             </div>
                             <div class="col-lg-6">
                                 <div class="p-5">
@@ -73,21 +73,17 @@
                                                 <label class="custom-control-label" for="remember_me">Ingat Saya</label>
                                             </div>
 
-                                            <!-- Lupa Kata Sandi -->
-                                            <a href="{{ route('password.request') }}" class="btn btn-link btn-user btn-sm" style="color: #67AE6E">
-                                                Lupa Kata Sandi?
-                                            </a>
                                         </div>
 
                                         <!-- Tombol Masuk -->
-                                        <button type="submit" class="btn btn-user btn-block" style="background-color: #328E6E; color:white">Masuk</button>
+                                        <button type="submit" class="btn btn-user btn-block" style="background-color: #F97316; color:white">Masuk</button>
 
                                     </form>
                                     <!-- End of Form Masuk -->
 
                                     <hr>
                                     <div class="text-center">
-                                        <p class="small">Tidak punya akun?<a href="{{ route('register') }}" style="color: #BF9264; font-weight: 700"> Daftar</a></p>
+                                        <p class="small">Tidak punya akun?<a href="{{ route('register') }}" style="color: #EF4444; font-weight: 700"> Daftar</a></p>
                                     </div>
                                 </div>
                             </div>

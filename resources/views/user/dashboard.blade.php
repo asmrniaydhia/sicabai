@@ -1,21 +1,13 @@
-{{-- @extends('layouts.app')
 
-@section('content')
-    <div class="container">
-        <h2>Diagnosa</h2>
-        <p>Isi konten diagnosa...</p>
-    </div>
-@endsection --}}
 
 @extends('layouts.app')
 
 @section('title', 'Dashboard Sistem Prediksi Cabai')
 
 @section('content')
-    <div class="dashboard-content fade-in">
+    <div class=" fade-in container-fluid mb-5 ">
         <div class="page-header">
-            <h1 class="page-title">Dashboard Sistem Prediksi</h1>
-            <p class="page-subtitle">Monitoring dan analisis kesehatan tanaman cabai secara real-time</p>
+            <h1 class="page-title">Dashboard</h1>
         </div>
 
         <div class="stats-grid">

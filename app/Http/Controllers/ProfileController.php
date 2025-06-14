@@ -31,12 +31,6 @@ class ProfileController extends Controller
         $user = $request->user();
         $hasChanges = false;
 
-        // Validasi file gambar terlebih dahulu jika ada
-        if ($request->hasFile('profile_photo')) {
-            $request->validate([
-                'profile_photo' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
-            ]);
-        }
 
         // Update data profil lainnya (nama, email, dll)
         $user->fill($request->validated());
@@ -50,27 +44,6 @@ class ProfileController extends Controller
         if ($user->isDirty('email')) {
             $user->email_verified_at = null;
         }
-
-        // Handle profile photo upload
-        if ($request->hasFile('profile_photo')) {
-            // Simpan path foto lama untuk dihapus nanti
-            $oldPhotoPath = $user->profile_photo;
-
-            // Simpan file gambar baru
-            $file = $request->file('profile_photo');
-            $filename = time() . '_' . $file->getClientOriginalName();
-            $path = $file->storeAs('profile_photos', $filename, 'public');
-
-            // Update path gambar di database
-            $user->profile_photo = $path;
-            $hasChanges = true;
-
-            // Hapus gambar lama setelah gambar baru berhasil disimpan
-            if ($oldPhotoPath && Storage::disk('public')->exists($oldPhotoPath)) {
-                Storage::disk('public')->delete($oldPhotoPath);
-            }
-        }
-
 
 
         // Update password jika ada input password baru
@@ -104,29 +77,6 @@ class ProfileController extends Controller
     }
 
     /**
-     * Remove the user's profile photo.
-     */
-    public function removePhoto(Request $request): RedirectResponse
-    {
-        $user = $request->user();
-        
-        if ($user->profile_photo) {
-            // Hapus file foto dari storage
-            if (Storage::disk('public')->exists($user->profile_photo)) {
-                Storage::disk('public')->delete($user->profile_photo);
-            }
-            
-            // Set profile_photo menjadi null di database
-            $user->profile_photo = null;
-            $user->save();
-            
-            return Redirect::route('profile.edit')->with('status', 'photo-removed');
-        }
-        
-        return Redirect::route('profile.edit');
-    }
-
-    /**
      * Delete the user's account.
      */
     public function destroy(Request $request): RedirectResponse
@@ -136,11 +86,6 @@ class ProfileController extends Controller
         ]);
 
         $user = $request->user();
-
-        // Hapus foto profil saat menghapus akun
-        if ($user->profile_photo && Storage::disk('public')->exists($user->profile_photo)) {
-            Storage::disk('public')->delete($user->profile_photo);
-        }
 
         Auth::logout();
 

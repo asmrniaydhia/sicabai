@@ -12,37 +12,11 @@
                 <span aria-hidden="true">&times;</span>
             </button>
         </div>
-    @elseif(session('status') == 'photo-removed')
-        <div class="alert alert-success" role="alert" id="successAlert">
-            Foto profil berhasil dihapus!
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
-        </div>
     @endif
 
     <!-- Card Profile Awal (Ditampilkan pada awalnya) -->
     <div class="card shadow mb-4 p-4" id="profileCard" style="{{ $errors->any() ? 'display:none;' : '' }}">
         <div class="row align-items-center">
-
-            <!-- Profile Image -->
-            <div class="col-md-4 text-center" id="profilePic">
-                <div style="width: 200px; height: 200px; border-radius: 8px; margin: 0 auto; ">
-                    @if($user->profile_photo)
-                        <img src="{{ asset('storage/' . $user->profile_photo) }}?v={{ time() }}" 
-                            alt="Profile Picture" 
-                            width="200" 
-                            height="200"
-                            style="object-fit: cover; width: 100%; height: 100%;border-radius: 8px;">
-                    @else
-                        <img src="https://via.placeholder.com/200x200/cccccc/666666?text=No+Image" 
-                            alt="Profile Picture" 
-                            width="200" 
-                            height="200"
-                            style="object-fit: cover; width: 100%; height: 100%;">
-                    @endif
-                </div>
-            </div>
 
             <!-- Profile Details -->
             <div class="col-md-8 d-flex flex-column justify-content-center" id="profileDetails">
@@ -131,36 +105,6 @@
             });
         }
         
-        // Handle tombol hapus foto
-        const removePhotoBtn = document.querySelector('#removePhotoBtn');
-        if (removePhotoBtn) {
-            removePhotoBtn.addEventListener('click', function() {
-                if (confirm('Apakah Anda yakin ingin menghapus foto profil?')) {
-                    // Buat form tersembunyi untuk menghapus foto
-                    const form = document.createElement('form');
-                    form.method = 'POST';
-                    form.action = '{{ route("profile.remove-photo") }}';
-                    form.style.display = 'none';
-                    
-                    // Tambahkan CSRF token
-                    const csrfInput = document.createElement('input');
-                    csrfInput.type = 'hidden';
-                    csrfInput.name = '_token';
-                    csrfInput.value = '{{ csrf_token() }}';
-                    form.appendChild(csrfInput);
-                    
-                    // Tambahkan method DELETE
-                    const methodInput = document.createElement('input');
-                    methodInput.type = 'hidden';
-                    methodInput.name = '_method';
-                    methodInput.value = 'DELETE';
-                    form.appendChild(methodInput);
-                    
-                    document.body.appendChild(form);
-                    form.submit();
-                }
-            });
-        }
     });
 </script>
 @endsection

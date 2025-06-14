@@ -21,7 +21,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        // 'usertype',
+        'usertype',
     ];
 
     /**
@@ -45,5 +45,10 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public function bengkel()
+    {
+        return $this->hasOne(Bengkel::class, 'id_user');
     }
 }
