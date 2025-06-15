@@ -51,12 +51,17 @@ Route::middleware(['auth', 'bengkelMiddleware'])->group(function () {
 // Group untuk Bengkel Service
 Route::middleware(['auth', 'bengkelService'])->group(function () {
     Route::get('/bengkelService/dashboard', [BengkelServiceController::class, 'index'])->name('bengkelService.dashboard');
+    Route::get('/bengkelService/barang', [BengkelServiceController::class, 'barang'])->name('bengkelService.barang');
+    Route::post('/bengkelService/barang', [BengkelServiceController::class, 'store'])->name('bengkelService.barang.store');
     Route::put('/bengkelService/{id}', [BengkelServiceController::class, 'update'])->name('bengkelService.update');
+    Route::get('/bengkelService/barang/{id}/edit', [BengkelServiceController::class, 'edit'])->name('barang.edit');
+    Route::delete('/bengkelService/barang/{id}', [BengkelServiceController::class, 'destroy'])->name('barang.destroy');
 });
 
 // Group untuk Tambal Ban
 Route::middleware(['auth', 'tambalBan'])->group(function () {
     Route::get('/tambalBan/dashboard', [BengkelTambalBanController::class, 'index'])->name('tambalBan.dashboard');
+    Route::get('/tambalBan/jasa', [BengkelTambalBanController::class, 'jasa'])->name('tambalBan.jasa');
     Route::put('/bengkelTambalBan/{id}', [BengkelTambalBanController::class, 'update'])->name('tambalBan.update');
 
 });

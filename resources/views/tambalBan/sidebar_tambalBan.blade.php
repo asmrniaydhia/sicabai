@@ -9,8 +9,15 @@
 
 
     <hr class="sidebar-divider my-0">
-    <li class="nav-item {{ (request()->is('/dashboard') || request()->is('dashboard')) ? 'active' : '' }}">
-        <a class="nav-link" href="{{ Auth::user()->usertype == 'user' ? route('dashboard') : route('dashboard') }}">
+    {{-- <li class="nav-item {{ (request()->is('tambalBan/dashboard') || request()->is('dashboard')) ? 'active' : '' }}">
+        <a class="nav-link" href="{{ Auth::user()->usertype == 'bengkel' ? route('tambalBan.dashboard') : route('dashboard') }}">
+            <i class="fas fa-fw fa-tachometer-alt"></i>
+            <span>Dashboard</span>
+        </a>
+    </li> --}}
+
+    <li class="nav-item {{ request()->is('tambalBan/dashboard') ? 'active' : '' }}">
+        <a class="nav-link" href="{{ Auth::user()->usertype == 'bengkel' ? route('tambalBan.dashboard') : route('dashboard') }}">
             <i class="fas fa-fw fa-tachometer-alt"></i>
             <span>Dashboard</span>
         </a>
@@ -21,8 +28,8 @@
 
     <!-- Add additional sidebar items as needed -->
     <hr class="sidebar-divider my-0">
-    <li class="nav-item">
-        <a class="nav-link" href="">
+    <li class="nav-item {{ request()->is('tambalBan/jasa') ? 'active' : '' }}">
+        <a class="nav-link" href="{{ Auth::user()->usertype == 'bengkel' ? route('tambalBan.jasa') : route('jasa') }}">
             <i class="fas fa-stethoscope"></i>
             <span>Jasa</span>
         </a>

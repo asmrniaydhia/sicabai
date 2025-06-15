@@ -66,4 +66,9 @@ class BengkelTambalBanController extends Controller
 
         return response()->json(['message' => 'Bengkel berhasil diperbarui!'], 200);
     }
+
+    public function jasa()
+    {
+        return view ('tambalBan.jasa');
+    }
 }

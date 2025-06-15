@@ -9,8 +9,8 @@
 
 
     <hr class="sidebar-divider my-0">
-    <li class="nav-item {{ (request()->is('/dashboard') || request()->is('dashboard')) ? 'active' : '' }}">
-        <a class="nav-link" href="{{ Auth::user()->usertype == 'user' ? route('dashboard') : route('dashboard') }}">
+    <li class="nav-item {{ (request()->is('bengkelService/dashboard') || request()->is('dashboard')) ? 'active' : '' }}">
+        <a class="nav-link" href="{{ Auth::user()->usertype == 'bengkel' ? route('bengkelService.dashboard') : route('dashboard') }}">
             <i class="fas fa-fw fa-tachometer-alt"></i>
             <span>Dashboard</span>
         </a>
@@ -25,7 +25,7 @@
     </div>
 
     <!-- Nav Item - Pages Collapse Menu -->
-    <li class="nav-item">
+    {{-- <li class="nav-item">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo"
             aria-expanded="true" aria-controls="collapseTwo">
             <i class="fas fa-fw fa-cog"></i>
@@ -38,11 +38,18 @@
                 <a class="collapse-item" href="cards.html">Cards</a>
             </div>
         </div>
-    </li>
+    </li> --}}
 
-    <li class="nav-item">
-        <a class="nav-link" href="">
+    {{-- <li class="nav-item {{ (request()->is('bengkelService/barang') || request()->is('barang')) ? 'active' : '' }}">
+        <a class="nav-link" href="{{ Auth::user()->usertype == 'bengkel' ? route('bengkelService.barang') : route('barang') }}">
             <i class="fas fa-fw fa-wrench"></i>
-            <span>Charts</span></a>
+            <span>Daftar Barang</span></a>
+    </li> --}}
+
+    <li class="nav-item {{ request()->is('bengkelService/barang') ? 'active' : '' }}">
+        <a class="nav-link" href="{{ Auth::user()->usertype == 'bengkel' ? route('bengkelService.barang') : route('barang') }}">
+            <i class="fas fa-fw fa-tachometer-alt"></i>
+            <span>Daftar Barang</span>
+        </a>
     </li>
 </ul>
