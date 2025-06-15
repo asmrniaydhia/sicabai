@@ -20,7 +20,7 @@
     <li class="nav-item {{ (request()->is('admin/user') || request()->is('user')) ? 'active' : '' }}">
         <a class="nav-link" href="{{ Auth::user()->usertype == 'admin' ? route('admin.user') : route('user') }}">
             <i class="fas fa-fw fa-users"></i>
-            <span> Data User </span>
+            <span> Data Akun </span>
         </a>
     </li>
 
