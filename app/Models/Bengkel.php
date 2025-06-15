@@ -25,4 +25,9 @@ class Bengkel extends Model
     {
         return $this->belongsTo(User::class, 'id_user');
     }
+
+    public function ratings()
+    {
+        return $this->hasMany(Rating::class, 'id_bengkel');
+    }
 }

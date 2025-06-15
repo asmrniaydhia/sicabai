@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers\User;
 
-use App\Http\Controllers\Controller;
+use App\Models\Bengkel;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
 
 class UserController extends Controller
 {
@@ -12,19 +14,41 @@ class UserController extends Controller
      */
     public function index()
     {
-        return view('user.dashboard');
-    }
+        // Ambil bengkel dengan rata-rata rating
+        $bengkels = Bengkel::leftJoin('ratings', 'bengkel.id', '=', 'ratings.id_bengkel')
+            ->select(
+                'bengkel.id',
+                'bengkel.id_user',
+                'bengkel.nama',
+                'bengkel.foto_bengkel',
+                'bengkel.jenis_bengkel',
+                'bengkel.whatsapp',
+                'bengkel.alamat',
+                'bengkel.jam_buka',
+                'bengkel.jam_tutup',
+                'bengkel.hari_libur',
+                'bengkel.latitude',
+                'bengkel.longitude',
+                DB::raw('COALESCE(AVG(ratings.rating), 0) as average_rating')
+            )
+            ->groupBy(
+                'bengkel.id',
+                'bengkel.id_user',
+                'bengkel.nama',
+                'bengkel.foto_bengkel',
+                'bengkel.jenis_bengkel',
+                'bengkel.whatsapp',
+                'bengkel.alamat',
+                'bengkel.jam_buka',
+                'bengkel.jam_tutup',
+                'bengkel.hari_libur',
+                'bengkel.latitude',
+                'bengkel.longitude'
+            )
+            ->take(10)
+            ->get();
 
-    public function edukasi() {
-        return view('user.edukasi');
-    }
-
-    public function diagnosa() {
-        return view('user.diagnosa');
-    }
-
-    public function riwayat() {
-        return view('user.riwayat');
+        return view('user.dashboard', compact('bengkels'));
     }
 
     /**

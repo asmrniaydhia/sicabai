@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Bengkel;
 
 use App\Models\Bengkel;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 
@@ -14,7 +15,7 @@ class BengkelController extends Controller
      */
     public function index()
     {
-
+        
     }
 
 
@@ -83,7 +84,18 @@ class BengkelController extends Controller
      */
     public function show(string $id)
     {
-        //
+        // Placeholder untuk detail bengkel
+        $bengkel = Bengkel::with('ratings.user')
+            ->leftJoin('ratings', 'bengkel.id', '=', 'ratings.id_bengkel')
+            ->select(
+                'bengkel.*',
+                DB::raw('COALESCE(AVG(ratings.rating), 0) as average_rating')
+            )
+            ->where('bengkel.id', $id)
+            ->groupBy('bengkel.id')
+            ->firstOrFail();
+
+        return view('bengkel_detail', compact('bengkel'));
     }
 
     /**

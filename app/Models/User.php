@@ -51,4 +51,9 @@ class User extends Authenticatable
     {
         return $this->hasOne(Bengkel::class, 'id_user');
     }
+
+    public function ratings()
+    {
+        return $this->hasMany(Rating::class, 'id_user');
+    }
 }
