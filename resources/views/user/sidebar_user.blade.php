@@ -21,7 +21,7 @@
 
     <hr class="sidebar-divider my-0">
     <li class="nav-item {{ (request()->is('/edukasi') || request()->is('edukasi')) ? 'active' : '' }}">
-        <a class="nav-link" href="{{ Auth::user()->usertype == 'user' ? route('edukasi') : route('edukasi') }}">
+        <a class="nav-link" href="">
             <i class="fas fa-chalkboard-teacher"></i>
             <span>Edukasi</span>
         </a>
@@ -29,7 +29,7 @@
 
     <hr class="sidebar-divider my-0">
     <li class="nav-item {{ (request()->is('/diagnosa') || request()->is('diagnosa')) ? 'active' : '' }}">
-        <a class="nav-link" href="{{ Auth::user()->usertype == 'user' ? route('diagnosa') : route('diagnosa') }}">
+        <a class="nav-link" href="">
             <i class="fas fa-stethoscope"></i>
             <span>Diagnosa</span>
         </a>
@@ -37,7 +37,7 @@
 
     <hr class="sidebar-divider my-0">
     <li class="nav-item {{ (request()->is('/riwayat') || request()->is('riwayat')) ? 'active' : '' }}">
-        <a class="nav-link" href="{{ Auth::user()->usertype == 'user' ? route('riwayat') : route('riwayat') }}">
+        <a class="nav-link" href="">
             <i class="fas fa-book"></i>
             <span>Riwayat</span>
         </a>

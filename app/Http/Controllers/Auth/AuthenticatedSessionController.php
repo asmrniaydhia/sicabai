@@ -28,27 +28,32 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        if (Auth::user()->usertype == 'admin'){
-            return redirect(route('admin.dashboard'));
+        $user = Auth::user();
+
+        if ($user->usertype == 'admin') {
+            return redirect()->route('admin.dashboard');
         }
 
-        if (Auth::user()->usertype == 'bengkel') {
-            if (Auth::user()->bengkel) {
-                // User has a bengkel record, redirect to appropriate dashboard
-                $jenisBengkel = Auth::user()->bengkel->jenis_bengkel;
+        if ($user->usertype == 'bengkel') {
+            if ($user->bengkel) {
+                $jenisBengkel = $user->bengkel->jenis_bengkel;
                 if ($jenisBengkel === 'service') {
                     return redirect()->route('bengkelService.dashboard');
                 } elseif ($jenisBengkel === 'tambal_ban') {
                     return redirect()->route('tambalBan.dashboard');
                 }
             } else {
-                // No bengkel record, redirect to input form
                 return redirect()->route('bengkel.input-toko');
             }
         }
 
-        return redirect()->back();
+        if ($user->usertype == 'user') {
+            return redirect()->route('user.dashboard');
+        }
+
+        return redirect()->back()->withErrors(['login' => 'Role tidak dikenali.']);
     }
+
 
     /**
      * Destroy an authenticated session.

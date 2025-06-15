@@ -56,5 +56,10 @@ class RegisteredUserController extends Controller
             }
             return redirect()->route('bengkel.input-toko');
         } 
+        elseif($user->usertype == 'admin') {
+            return redirect()->route('admin.dashboard');
+        }else{
+            return redirect()->route('user.dashboard');
+        }
     }
 }
