@@ -30,28 +30,16 @@
                                             Informasi Bengkel
                                         </h1>
                                     </div>
-                                    @if (session('success'))
-                                        <div class="alert alert-success">{{ session('success') }}</div>
-                                    @endif
-                                    @if (session('error'))
-                                        <div class="alert alert-danger">{{ session('error') }}</div>
-                                    @endif
-                                    <form method="POST" action="{{ route('bengkel.input-toko.store') }}" enctype="multipart/form-data" class="user">
-                                        @csrf
+                                    <form method="POST" action="/bengkel/input-toko" enctype="multipart/form-data" class="user">
+                                        <input type="hidden" name="_token" value="{{ csrf_token() }}">
                                         <div class="row">
                                             <!-- Left Column: Nama Bengkel, WhatsApp, Jenis Bengkel, Foto, Alamat, Jasa Penjemputan, Jam Operasional, Hari Libur -->
                                             <div class="col-lg-6">
                                                 <div class="mb-4">
-                                                    <input type="text" class="form-control rounded-pill @error('nama') is-invalid @enderror" name="nama" id="nama" placeholder="Nama Bengkel" value="{{ old('nama') }}" required autofocus>
-                                                    @error('nama')
-                                                        <div class="invalid-feedback">{{ $message }}</div>
-                                                    @enderror
+                                                    <input type="text" class="form-control rounded-pill" name="nama" id="nama" placeholder="Nama Bengkel" required autofocus>
                                                 </div>
                                                 <div class="mb-4">
-                                                    <input type="tel" class="form-control rounded-pill @error('whatsapp') is-invalid @enderror" name="whatsapp" id="whatsapp" placeholder="Nomor WhatsApp" pattern="[0-9]{10,13}" title="Masukkan nomor WhatsApp yang valid (10-13 digit)" value="{{ old('whatsapp') }}" required>
-                                                    @error('whatsapp')
-                                                        <div class="invalid-feedback">{{ $message }}</div>
-                                                    @enderror
+                                                    <input type="tel" class="form-control rounded-pill" name="whatsapp" id="whatsapp" placeholder="Nomor WhatsApp" pattern="[0-9]{10,13}" title="Masukkan nomor WhatsApp yang valid (10-13 digit)" required>
                                                 </div>
                                                 <div class="mb-4">
                                                     <label class="text-gray-700 mb-2 d-block">
@@ -59,35 +47,26 @@
                                                     </label>
                                                     <div class="d-flex">
                                                         <div class="form-check form-check-inline">
-                                                            <input class="form-check-input @error('jenis_bengkel') is-invalid @enderror" type="radio" name="jenis_bengkel" id="service" value="service" {{ old('jenis_bengkel') == 'service' ? 'checked' : '' }} required>
+                                                            <input class="form-check-input" type="radio" name="jenis_bengkel" id="service" value="service" required>
                                                             <label class="form-check-label" for="service">Bengkel Service</label>
                                                         </div>
                                                         <div class="form-check form-check-inline">
-                                                            <input class="form-check-input @error('jenis_bengkel') is-invalid @enderror" type="radio" name="jenis_bengkel" id="tambal_ban" value="tambal_ban" {{ old('jenis_bengkel') == 'tambal_ban' ? 'checked' : '' }}>
+                                                            <input class="form-check-input" type="radio" name="jenis_bengkel" id="tambal_ban" value="tambal_ban">
                                                             <label class="form-check-label" for="tambal_ban">Bengkel Tambal Ban</label>
                                                         </div>
                                                     </div>
-                                                    @error('jenis_bengkel')
-                                                        <div class="invalid-feedback d-block">{{ $message }}</div>
-                                                    @enderror
                                                 </div>
                                                 <div class="mb-4">
                                                     <label class="text-gray-700 mb-2 d-block">
                                                         <i class="fas fa-image mr-2"></i> Foto Bengkel
                                                     </label>
-                                                    <input type="file" class="form-control @error('foto_bengkel') is-invalid @enderror" name="foto_bengkel" id="foto_bengkel" accept="image/*" required>
-                                                    @error('foto_bengkel')
-                                                        <div class="invalid-feedback">{{ $message }}</div>
-                                                    @enderror
+                                                    <input type="file" class="form-control" name="foto_bengkel" id="foto_bengkel" accept="image/*" required>
                                                 </div>
                                                 <div class="mb-4">
                                                     <label class="text-gray-700 mb-2 d-block">
                                                         <i class="fas fa-map-marker-alt mr-2"></i> Alamat Lengkap
                                                     </label>
-                                                    <textarea class="form-control @error('alamat') is-invalid @enderror" name="alamat" id="alamat" rows="4" placeholder="Masukkan alamat lengkap bengkel" required>{{ old('alamat') }}</textarea>
-                                                    @error('alamat')
-                                                        <div class="invalid-feedback">{{ $message }}</div>
-                                                    @enderror
+                                                    <textarea class="form-control" name="alamat" id="alamat" rows="4" placeholder="Masukkan alamat lengkap bengkel" required></textarea>
                                                 </div>
                                                 <div class="mb-4">
                                                     <label class="text-gray-700 mb-2 d-block">
@@ -95,17 +74,14 @@
                                                     </label>
                                                     <div class="d-flex">
                                                         <div class="form-check form-check-inline">
-                                                            <input class="form-check-input @error('jasa_penjemputan') is-invalid @enderror" type="radio" name="jasa_penjemputan" id="ada" value="ada" {{ old('jasa_penjemputan') == 'ada' ? 'checked' : '' }} required>
+                                                            <input class="form-check-input" type="radio" name="jasa_penjemputan" id="ada" value="ada" required>
                                                             <label class="form-check-label" for="ada">Ada</label>
                                                         </div>
                                                         <div class="form-check form-check-inline">
-                                                            <input class="form-check-input @error('jasa_penjemputan') is-invalid @enderror" type="radio" name="jasa_penjemputan" id="tidak" value="tidak" {{ old('jasa_penjemputan') == 'tidak' ? 'checked' : '' }}>
+                                                            <input class="form-check-input" type="radio" name="jasa_penjemputan" id="tidak" value="tidak">
                                                             <label class="form-check-label" for="tidak">Tidak</label>
                                                         </div>
                                                     </div>
-                                                    @error('jasa_penjemputan')
-                                                        <div class="invalid-feedback d-block">{{ $message }}</div>
-                                                    @enderror
                                                 </div>
                                                 <div class="mb-4">
                                                     <label class="text-gray-700 mb-2 d-block">
@@ -113,16 +89,10 @@
                                                     </label>
                                                     <div class="row">
                                                         <div class="col-sm-6 mb-3 mb-sm-0">
-                                                            <input type="time" class="form-control rounded-pill @error('jam_buka') is-invalid @enderror" name="jam_buka" id="jam_buka" value="{{ old('jam_buka') }}" required>
-                                                            @error('jam_buka')
-                                                                <div class="invalid-feedback">{{ $message }}</div>
-                                                            @enderror
+                                                            <input type="time" class="form-control rounded-pill" name="jam_buka" id="jam_buka" required>
                                                         </div>
                                                         <div class="col-sm-6">
-                                                            <input type="time" class="form-control rounded-pill @error('jam_tutup') is-invalid @enderror" name="jam_tutup" id="jam_tutup" value="{{ old('jam_tutup') }}" required>
-                                                            @error('jam_tutup')
-                                                                <div class="invalid-feedback">{{ $message }}</div>
-                                                            @enderror
+                                                            <input type="time" class="form-control rounded-pill" name="jam_tutup" id="jam_tutup" required>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -131,25 +101,42 @@
                                                         <i class="fas fa-calendar-times mr-2"></i> Hari Libur
                                                     </label>
                                                     <div class="d-flex flex-wrap">
-                                                        @foreach (['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'] as $day)
-                                                            <div class="form-check form-check-inline">
-                                                                <input class="form-check-input" type="checkbox" name="hari_libur[]" id="{{ $day }}" value="{{ $day }}" {{ in_array($day, old('hari_libur', [])) ? 'checked' : '' }}>
-                                                                <label class="form-check-label" for="{{ $day }}">{{ $day }}</label>
-                                                            </div>
-                                                        @endforeach
+                                                        <div class="form-check form-check-inline">
+                                                            <input class="form-check-input" type="checkbox" name="hari_libur[]" id="Senin" value="Senin">
+                                                            <label class="form-check-label" for="Senin">Senin</label>
+                                                        </div>
+                                                        <div class="form-check form-check-inline">
+                                                            <input class="form-check-input" type="checkbox" name="hari_libur[]" id="Selasa" value="Selasa">
+                                                            <label class="form-check-label" for="Selasa">Selasa</label>
+                                                        </div>
+                                                        <div class="form-check form-check-inline">
+                                                            <input class="form-check-input" type="checkbox" name="hari_libur[]" id="Rabu" value="Rabu">
+                                                            <label class="form-check-label" for="Rabu">Rabu</label>
+                                                        </div>
+                                                        <div class="form-check form-check-inline">
+                                                            <input class="form-check-input" type="checkbox" name="hari_libur[]" id="Kamis" value="Kamis">
+                                                            <label class="form-check-label" for="Kamis">Kamis</label>
+                                                        </div>
+                                                        <div class="form-check form-check-inline">
+                                                            <input class="form-check-input" type="checkbox" name="hari_libur[]" id="Jumat" value="Jumat">
+                                                            <label class="form-check-label" for="Jumat">Jumat</label>
+                                                        </div>
+                                                        <div class="form-check form-check-inline">
+                                                            <input class="form-check-input" type="checkbox" name="hari_libur[]" id="Sabtu" value="Sabtu">
+                                                            <label class="form-check-label" for="Sabtu">Sabtu</label>
+                                                        </div>
+                                                        <div class="form-check form-check-inline">
+                                                            <input class="form-check-input" type="checkbox" name="hari_libur[]" id="Minggu" value="Minggu">
+                                                            <label class="form-check-label" for="Minggu">Minggu</label>
+                                                        </div>
                                                     </div>
-                                                    @error('hari_libur')
-                                                        <div class="invalid-feedback d-block">{{ $message }}</div>
-                                                    @enderror
                                                 </div>
                                             </div>
                                             <!-- Right Column: Search, Map, Lat/Lng -->
                                             <div class="col-lg-6">
-                                                <div class="mb-4">
-                                                    <input type="text" id="searchmap" class="form-control rounded-pill @error('searchmap') is-invalid @enderror" placeholder="Cari lokasi bengkel..." value="{{ old('searchmap') }}">
-                                                    @error('searchmap')
-                                                        <div class="invalid-feedback">{{ $message }}</div>
-                                                    @enderror
+                                                <div class="mb-4 position-relative">
+                                                    <input type="text" id="searchmap" class="form-control rounded-pill" placeholder="Cari lokasi bengkel...">
+                                                    <div class="dropdown-menu w-100" id="search-suggestions"></div>
                                                 </div>
                                                 <div class="mb-4">
                                                     <label class="text-gray-700 mb-2 d-block">
@@ -162,16 +149,10 @@
                                                 </div>
                                                 <div class="row mb-4">
                                                     <div class="col-sm-6 mb-3 mb-sm-0">
-                                                        <input type="text" class="form-control rounded-pill @error('lat') is-invalid @enderror" name="lat" id="lat" placeholder="Latitude" value="{{ old('lat') }}" readonly>
-                                                        @error('lat')
-                                                            <div class="invalid-feedback">{{ $message }}</div>
-                                                        @enderror
+                                                        <input type="text" class="form-control rounded-pill" name="lat" id="lat" placeholder="Latitude">
                                                     </div>
                                                     <div class="col-sm-6">
-                                                        <input type="text" class="form-control rounded-pill @error('lng') is-invalid @enderror" name="lng" id="lng" placeholder="Longitude" value="{{ old('lng') }}" readonly>
-                                                        @error('lng')
-                                                            <div class="invalid-feedback">{{ $message }}</div>
-                                                        @enderror
+                                                        <input type="text" class="form-control rounded-pill" name="lng" id="lng" placeholder="Longitude">
                                                     </div>
                                                 </div>
                                             </div>
@@ -246,12 +227,13 @@
             $('#lat').val(lat.toFixed(6));
             $('#lng').val(lng.toFixed(6));
         });
-        // Search functionality using Nominatim
+        // Search functionality with multiple suggestions using Nominatim
         var searchTimeout;
         $('#searchmap').on('input', function() {
             var query = $(this).val();
             clearTimeout(searchTimeout);
             if (query.length < 3) {
+                $('#search-suggestions').empty().removeClass('show');
                 return;
             }
             searchTimeout = setTimeout(function() {
@@ -265,22 +247,55 @@
                         addressdetails: 1
                     },
                     success: function(data) {
+                        $('#search-suggestions').empty();
                         if (data.length > 0) {
-                            var result = data[0];
-                            var lat = parseFloat(result.lat);
-                            var lng = parseFloat(result.lon);
-                            map.setView([lat, lng], 15);
-                            marker.setLatLng([lat, lng]);
-                            $('#lat').val(lat.toFixed(6));
-                            $('#lng').val(lng.toFixed(6));
-                            $('#searchmap').val(result.display_name);
+                            data.forEach(function(result) {
+                                var item = $('<a>', {
+                                    class: 'dropdown-item',
+                                    href: '#',
+                                    text: result.display_name,
+                                    'data-lat': parseFloat(result.lat).toFixed(6),
+                                    'data-lng': parseFloat(result.lon).toFixed(6)
+                                });
+                                item.on('click', function(e) {
+                                    e.preventDefault();
+                                    var lat = $(this).data('lat');
+                                    var lng = $(this).data('lng');
+                                    map.setView([lat, lng], 15);
+                                    marker.setLatLng([lat, lng]);
+                                    $('#lat').val(lat);
+                                    $('#lng').val(lng);
+                                    $('#searchmap').val($(this).text());
+                                    $('#search-suggestions').removeClass('show');
+                                });
+                                $('#search-suggestions').append(item);
+                            });
+                            $('#search-suggestions').addClass('show');
+                        } else {
+                            $('#search-suggestions').removeClass('show');
                         }
                     },
                     error: function() {
                         console.log('Error searching location');
+                        $('#search-suggestions').removeClass('show');
                     }
                 });
             }, 500);
+        });
+        // Hide suggestions when clicking outside
+        $(document).on('click', function(e) {
+            if (!$(e.target).closest('#searchmap, #search-suggestions').length) {
+                $('#search-suggestions').removeClass('show');
+            }
+        });
+        // Update marker position when lat/lng inputs change
+        $('#lat, #lng').on('input', function() {
+            var lat = parseFloat($('#lat').val());
+            var lng = parseFloat($('#lng').val());
+            if (!isNaN(lat) && !isNaN(lng)) {
+                marker.setLatLng([lat, lng]);
+                map.setView([lat, lng], 15);
+            }
         });
         // Set initial coordinates
         if (!userLocationFound) {

@@ -54,10 +54,13 @@ Route::middleware(['auth', 'bengkelMiddleware'])->group(function () {
 // Group untuk Bengkel Service
 Route::middleware(['auth', 'bengkelService'])->group(function () {
     Route::get('/bengkelService/dashboard', [BengkelServiceController::class, 'index'])->name('bengkelService.dashboard');
+    Route::put('/bengkelService/{id}', [BengkelServiceController::class, 'update'])->name('bengkelService.update');
 });
 
 // Group untuk Tambal Ban
 Route::middleware(['auth', 'tambalBan'])->group(function () {
     Route::get('/tambalBan/dashboard', [BengkelTambalBanController::class, 'index'])->name('tambalBan.dashboard');
+    Route::put('/bengkelTambalBan/{id}', [BengkelTambalBanController::class, 'update'])->name('tambalBan.update');
+
 });
 

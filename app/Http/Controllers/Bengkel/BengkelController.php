@@ -33,7 +33,7 @@ class BengkelController extends Controller
     public function store(Request $request)
     {
         if (Auth::user()->usertype !== 'bengkel' || Auth::user()->bengkel) {
-            return redirect()->route('home')->with('error', 'Akses tidak diizinkan.');
+            return redirect()->route('dashboard')->with('error', 'Akses tidak diizinkan.');
         }
 
         $validated = $request->validate([
