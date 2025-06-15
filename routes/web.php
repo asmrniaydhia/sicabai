@@ -36,6 +36,14 @@ Route::middleware(['auth', 'userMiddleware'])->group(function(){
 
 Route::middleware(['auth', 'adminMiddleware'])->group(function(){
     Route::get('/admin/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
+    Route::get('/admin/sparepart', [AdminController::class, 'sparepart'])->name('admin.sparepart');
+    Route::get('/admin/user', [AdminController::class, 'user'])->name('admin.user');
+    Route::get('/admin/bengkel', [AdminController::class, 'bengkel'])->name('admin.bengkel');
+
+    Route::post('/admin/sparepart', [AdminController::class, 'storeSparepart'])->name('admin.sparepart.store');
+    Route::get('/admin/sparepart/{id}/edit', [AdminController::class, 'editSparepart'])->name('sparepart.edit');
+    Route::put('/admin/sparepart/{id}', [AdminController::class, 'updateSparepart'])->name('sparepart.update');
+    Route::delete('/admin/sparepart/{id}', [AdminController::class, 'destroySparepart'])->name('sparepart.destroy');
 });
 
 Route::middleware(['auth', 'bengkelMiddleware'])->group(function () {

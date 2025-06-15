@@ -17,6 +17,27 @@
     <hr class="sidebar-divider">
     <div class="sidebar-heading">IDENTIFIKASI</div>
 
+    <li class="nav-item {{ (request()->is('admin/user') || request()->is('user')) ? 'active' : '' }}">
+        <a class="nav-link" href="{{ Auth::user()->usertype == 'admin' ? route('admin.user') : route('user') }}">
+            <i class="fas fa-fw fa-users"></i>
+            <span> Data User </span>
+        </a>
+    </li>
+
+    <li class="nav-item {{ (request()->is('admin/bengkel') || request()->is('bengkel')) ? 'active' : '' }}">
+        <a class="nav-link" href="{{ Auth::user()->usertype == 'admin' ? route('admin.bengkel') : route('bengkel') }}">
+            <i class="fas fa-tools"></i>
+            <span> Data Bengkel </span>
+        </a>
+    </li>
+
+    <li class="nav-item {{ (request()->is('admin/sparepart') || request()->is('sparepart')) ? 'active' : '' }}">
+        <a class="nav-link" href="{{ Auth::user()->usertype == 'admin' ? route('admin.sparepart') : route('sparepart') }}">
+            <i class="fas fa-boxes "></i>
+            <span>Kategori Sparepart</span>
+        </a>
+    </li>
+
     <!-- Add additional sidebar items as needed -->
 
     <hr class="sidebar-divider d-none d-md-block">
