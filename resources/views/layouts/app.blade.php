@@ -449,8 +449,6 @@
 
         @if(Auth::user()->usertype == 'admin')
             @include('admin.sidebar_admin')
-        @elseif(Auth::user()->usertype == 'user')
-            @include('user.sidebar_user')
         @elseif(Auth::user()->usertype == 'bengkel') 
             @if (Auth::user()->bengkel) 
                 @if (Auth::user()->bengkel->jenis_bengkel === 'service') 
