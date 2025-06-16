@@ -30,8 +30,8 @@
     <hr class="sidebar-divider my-0">
     <li class="nav-item {{ request()->is('tambalBan/jasa') ? 'active' : '' }}">
         <a class="nav-link" href="{{ Auth::user()->usertype == 'bengkel' ? route('tambalBan.jasa') : route('jasa') }}">
-            <i class="fas fa-stethoscope"></i>
-            <span>Jasa</span>
+            <i class="fas fa-cogs"></i>
+            <span>Jasa Service </span>
         </a>
     </li>
 </ul>
