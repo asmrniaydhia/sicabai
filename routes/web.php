@@ -106,6 +106,9 @@ Route::middleware(['auth', 'bengkelService'])->group(function () {
     Route::get('/bengkelService/dashboard', [BengkelServiceController::class, 'index'])->name('bengkelService.dashboard');
     Route::put('/bengkelService/{id}', [BengkelServiceController::class, 'update'])->name('bengkelService.update');
 
+    Route::get('/bengkelService/ratings', [BengkelServiceController::class, 'ratings'])->name('bengkelService.ratings');
+
+
     Route::get('/barang/create', [BarangController::class, 'create'])->name('barang.create');
     Route::post('/barang/store', [BarangController::class, 'store'])->name('barang.store');
     Route::get('/barang/{id}/edit', [BarangController::class, 'edit'])->name('barang.edit');
@@ -118,7 +121,7 @@ Route::middleware(['auth', 'tambalBan'])->group(function () {
     Route::get('/tambalBan/jasa', [BengkelTambalBanController::class, 'jasa'])->name('tambalBan.jasa');
 
     Route::get('/tambalBan/ratings', [BengkelTambalBanController::class, 'ratings'])->name('tambalBan.ratings');
-    
+
     Route::put('/bengkelTambalBan/{id}', [BengkelTambalBanController::class, 'update'])->name('tambalBan.update');
 
     Route::get('/jasa-service', [BengkelTambalBanController::class, 'jasaService'])->name('jasa.service');

@@ -326,37 +326,6 @@
         </div>
     </div>
 
-    <!-- Recent Activity -->
-    <div class="recent-activity">
-        <h3>📋 Aktivitas Terbaru</h3>
-        <div class="activity-item">
-            <div class="activity-icon success">
-                <i class="fas fa-user-plus"></i>
-            </div>
-            <div class="activity-text">
-                <p><strong>User baru</strong> telah mendaftar</p>
-                <span class="activity-time">2 menit yang lalu</span>
-            </div>
-        </div>
-        <div class="activity-item">
-            <div class="activity-icon primary">
-                <i class="fas fa-wrench"></i>
-            </div>
-            <div class="activity-text">
-                <p><strong>Sparepart baru</strong> ditambahkan</p>
-                <span class="activity-time">15 menit yang lalu</span>
-            </div>
-        </div>
-        <div class="activity-item">
-            <div class="activity-icon warning">
-                <i class="fas fa-tools"></i>
-            </div>
-            <div class="activity-text">
-                <p><strong>Data bengkel</strong> diperbarui</p>
-                <span class="activity-time">1 jam yang lalu</span>
-            </div>
-        </div>
-    </div>
 </div>
 
 <script>

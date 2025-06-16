@@ -1,72 +1,61 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container">
+<div class="fade-in container py-5" style="font-family: 'Instrument Sans', sans-serif;">
     <div class="row justify-content-center">
         <div class="col-md-8">
-            
             <!-- Page Header -->
-            <div class="card mb-4 border-0 shadow-sm">
-                <div class="card-body text-center bg-primary text-white rounded">
-                    <h3 class="mb-1">
-                        <i class="fas fa-user-edit me-2"></i>Edit Akun
-                    </h3>
-                    <p class="mb-0">Perbarui informasi akun</p>
+            <div class="card mb-4 border-0 shadow-sm" style="border-radius: 15px; background-color: #d9534f; background-image: linear-gradient(180deg, #d9534f 10%, #c73e3e 100%);">
+                <div class="card-body text-center text-white p-4">
+                    <h5 class="fw-bold mb-0" style="font-weight: 600;">Edit Akun</h5>
+                    <p class="mb-0" style="opacity: 0.8;">Perbarui informasi akun</p>
                 </div>
             </div>
 
             <!-- Alert Messages -->
             @if(session('success'))
-            <div class="alert alert-success alert-dismissible fade show" role="alert">
-                <i class="fas fa-check-circle me-2"></i>{{ session('success') }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            <div class="alert alert-success border-start border-5 border-success d-flex align-items-center shadow-sm" style="border-radius: 8px;" role="alert">
+                {{ session('success') }}
             </div>
             @endif
 
             @if($errors->any())
-            <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                <i class="fas fa-exclamation-circle me-2"></i>
+            <div class="alert alert-danger border-start border-5 border-danger d-flex align-items-center shadow-sm" style="border-radius: 8px;" role="alert">
                 <ul class="mb-0">
                     @foreach ($errors->all() as $error)
                         <li>{{ $error }}</li>
                     @endforeach
                 </ul>
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
             @endif
 
             @if(session('error'))
-            <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                <i class="fas fa-exclamation-circle me-2"></i>{{ session('error') }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            <div class="alert alert-danger border-start border-5 border-danger d-flex align-items-center shadow-sm" style="border-radius: 8px;" role="alert">
+                {{ session('error') }}
             </div>
             @endif
 
             <!-- Form Container -->
-            <div class="card shadow">
-                <div class="card-header bg-light">
-                    <h5 class="card-title mb-0">
-                        <i class="fas fa-edit me-2"></i>Form Edit Akun
-                    </h5>
+            <div class="card shadow-sm" style="border-radius: 15px;">
+                <div class="card-header text-white p-3" style="background-color: #d9534f; background-image: linear-gradient(180deg, #d9534f 10%, #c73e3e 100%); border-radius: 15px 15px 0 0;">
+                    <h6 class="fw-bold mb-0">Form Edit Akun</h6>
                 </div>
-                <div class="card-body">
+                <div class="card-body p-4">
                     <form id="editUserForm" action="{{ route('admin.user.update', $user->id) }}" method="POST">
                         @csrf
                         @method('PUT')
                         
                         <div class="row">
                             <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label for="name" class="form-label fw-bold">
-                                        <i class="fas fa-user me-1 text-primary"></i>Nama Lengkap
-                                    </label>
+                                <div class="mb-3 text-start">
+                                    <label for="name" class="form-label fw-medium text-dark">Nama Pengguna <span class="text-danger">*</span></label>
                                     <input 
                                         type="text" 
                                         id="name"
                                         name="name" 
-                                        class="form-control @error('name') is-invalid @enderror"
+                                        class="form-control rounded-3 @error('name') is-invalid @enderror"
                                         value="{{ old('name', $user->name) }}"
-                                        placeholder="Masukkan nama lengkap..."
+                                        placeholder="Masukkan Nama Pengguna"
                                         required
                                     >
                                     @error('name')
@@ -76,15 +65,13 @@
                             </div>
                             
                             <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label for="email" class="form-label fw-bold">
-                                        <i class="fas fa-envelope me-1 text-primary"></i>Email
-                                    </label>
+                                <div class="mb-3 text-start">
+                                    <label for="email" class="form-label fw-medium text-dark">Email <span class="text-danger">*</span></label>
                                     <input 
                                         type="email" 
                                         id="email"
                                         name="email" 
-                                        class="form-control @error('email') is-invalid @enderror"
+                                        class="form-control rounded-3 @error('email') is-invalid @enderror"
                                         value="{{ old('email', $user->email) }}"
                                         placeholder="Masukkan alamat email..."
                                         required
@@ -96,69 +83,55 @@
                             </div>
                         </div>
 
-                        <div class="mb-3">
-                            <label for="usertype" class="form-label fw-bold">
-                                <i class="fas fa-user-tag me-1 text-primary"></i>Role
-                            </label>
+                        <div class="mb-3 text-start">
+                            <label for="usertype" class="form-label fw-medium text-dark">Role <span class="text-danger">*</span></label>
                             <select 
                                 id="usertype"
                                 name="usertype" 
-                                class="form-select @error('usertype') is-invalid @enderror"
+                                class="form-select rounded-3 @error('usertype') is-invalid @enderror"
                                 required
                             >
                                 <option value="">Pilih Role...</option>
-                                <option value="admin" {{ old('usertype', $user->usertype) == 'admin' ? 'selected' : '' }}>
-                                    👑 Admin
-                                </option>
-                                <option value="bengkel" {{ old('usertype', $user->usertype) == 'bengkel' ? 'selected' : '' }}>
-                                    🔧 Bengkel
-                                </option>
-                                <option value="user" {{ old('usertype', $user->usertype) == 'user' ? 'selected' : '' }}>
-                                    👤 User
-                                </option>
+                                <option value="admin" {{ old('usertype', $user->usertype) == 'admin' ? 'selected' : '' }}>Admin</option>
+                                <option value="bengkel" {{ old('usertype', $user->usertype) == 'bengkel' ? 'selected' : '' }}>Bengkel</option>
+                                <option value="user" {{ old('usertype', $user->usertype) == 'user' ? 'selected' : '' }}>User</option>
                             </select>
                             @error('usertype')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
 
-                        <div class="mb-3">
-                            <label for="password" class="form-label fw-bold">
-                                <i class="fas fa-lock me-1 text-primary"></i>Password Baru
-                            </label>
+                        <div class="mb-3 text-start">
+                            <label for="password" class="form-label fw-medium text-dark">Password Baru</label>
                             <input 
                                 type="password" 
                                 id="password"
                                 name="password" 
-                                class="form-control @error('password') is-invalid @enderror"
+                                class="form-control rounded-3 @error('password') is-invalid @enderror"
                                 placeholder="Kosongkan jika tidak ingin mengubah password..."
                             >
                             @error('password')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
-                            <div class="form-text">
-                                <i class="fas fa-info-circle me-1"></i>Kosongkan jika tidak ingin mengubah password
-                            </div>
+                            <div class="form-text">Kosongkan jika tidak ingin mengubah password</div>
                         </div>
 
-                        <div class="mb-3">
-                            <label for="password_confirmation" class="form-label fw-bold">
-                                <i class="fas fa-lock me-1 text-primary"></i>Konfirmasi Password Baru
-                            </label>
+                        <div class="mb-3 text-start">
+                            <label for="password_confirmation" class="form-label fw-medium text-dark">Konfirmasi Password Baru</label>
                             <input 
                                 type="password" 
                                 id="password_confirmation"
                                 name="password_confirmation" 
-                                class="form-control"
+                                class="form-control rounded-3"
                                 placeholder="Ulangi password baru..."
                             >
                         </div>
 
                         <div class="d-flex justify-content-center gap-3 mt-4">
-                            <button type="submit" class="btn btn-success btn-lg px-4">
+                            <button type="submit" class="btn text-white rounded-3 px-4" style="background-color: #d9534f; border-color: #d9534f;">
                                 <i class="fas fa-save me-2"></i>Simpan Perubahan
                             </button>
-                            <a href="{{ route('admin.user') }}" class="btn btn-secondary btn-lg px-4">
+                            <a href="{{ route('admin.user') }}" class="btn btn-secondary rounded-3 px-4">
                                 <i class="fas fa-arrow-left me-2"></i>Kembali
                             </a>
                         </div>
@@ -207,40 +180,77 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         if (errors.length > 0) {
-            alert('❌ Terjadi kesalahan:\n\n' + errors.map(error => '• ' + error).join('\n'));
+            alert('Terjadi kesalahan:\n\n' + errors.map(error => '• ' + error).join('\n'));
             e.preventDefault();
             return;
         }
 
-        if (!confirm('🤔 Apakah Anda yakin ingin menyimpan perubahan ini?')) {
+        if (!confirm('Apakah Anda yakin ingin menyimpan perubahan ini?')) {
             e.preventDefault();
         }
-    });
-
-    // Add focus enhancement
-    const inputs = document.querySelectorAll('.form-control, .form-select');
-    inputs.forEach(input => {
-        input.addEventListener('focus', function() {
-            this.parentNode.style.transform = 'scale(1.02)';
-            this.parentNode.style.transition = 'transform 0.2s ease';
-        });
-        
-        input.addEventListener('blur', function() {
-            this.parentNode.style.transform = 'scale(1)';
-        });
     });
 
     // Auto hide alerts after 5 seconds
     setTimeout(function() {
         const alerts = document.querySelectorAll('.alert');
-        alerts.forEach(function(alert) {
-            alert.style.transition = 'opacity 0.5s ease-out';
-            alert.style.opacity = '0';
-            setTimeout(function() {
-                alert.remove();
-            }, 500);
+        alerts.forEach(alert => {
+            if (window.bootstrap && window.bootstrap.Alert) {
+                const bsAlert = new bootstrap.Alert(alert);
+                bsAlert.close();
+            }
         });
     }, 5000);
 });
 </script>
+
+<style>
+    /* General Styling */
+    .fade-in {
+        animation: fadeIn 0.5s ease-in;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    /* Card Styling */
+    .card {
+        transition: all 0.3s ease;
+    }
+
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    /* Button Styling */
+    .btn {
+        transition: all 0.3s ease;
+    }
+
+    .btn:hover {
+        transform: translateY(-2px);
+    }
+
+    .btn-primary:hover, .btn-warning:hover, .btn-danger:hover {
+        background-color: #c73e3e;
+        border-color: #c73e3e;
+    }
+
+    /* Form Inputs */
+    .form-control, .form-select {
+        transition: all 0.3s ease;
+    }
+
+    .form-control:focus, .form-select:focus {
+        border-color: #d9534f;
+        box-shadow: 0 0 0 0.25rem rgba(217, 83, 79, 0.25);
+    }
+
+    /* Alert Styling */
+    .alert {
+        transition: all 0.3s ease;
+    }
+</style>
 @endsection

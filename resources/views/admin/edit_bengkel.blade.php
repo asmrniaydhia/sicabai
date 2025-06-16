@@ -109,12 +109,6 @@
                                              alt="Foto Bengkel" 
                                              class="img-thumbnail" 
                                              style="width: 150px; height: 150px; object-fit: cover;">
-                                        <div class="form-check mt-2">
-                                            <input class="form-check-input" type="checkbox" name="hapus_foto" id="hapus_foto" value="1">
-                                            <label class="form-check-label text-danger" for="hapus_foto">
-                                                Hapus foto saat disimpan
-                                            </label>
-                                        </div>
                                     </div>
                                     @endif
                                     @error('foto_bengkel')
@@ -160,7 +154,7 @@
                                             <i class="fas fa-clock me-1 text-primary"></i>Jam Buka
                                         </label>
                                         <input type="time" name="jam_buka" class="form-control @error('jam_buka') is-invalid @enderror" 
-                                               value="{{ old('jam_buka', $bengkel->jam_buka) }}" required>
+                                               value="{{ old('jam_buka', $bengkel->jam_buka ? substr($bengkel->jam_buka, 0, 5) : '') }}" required>
                                         @error('jam_buka')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
@@ -170,7 +164,7 @@
                                             <i class="fas fa-clock me-1 text-primary"></i>Jam Tutup
                                         </label>
                                         <input type="time" name="jam_tutup" class="form-control @error('jam_tutup') is-invalid @enderror" 
-                                               value="{{ old('jam_tutup', $bengkel->jam_tutup) }}" required>
+                                               value="{{ old('jam_tutup', $bengkel->jam_tutup ? substr($bengkel->jam_tutup, 0, 5) : '') }}" required>
                                         @error('jam_tutup')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
@@ -189,12 +183,6 @@
                                         <div class="form-check">
                                             <input class="form-check-input" type="checkbox" name="hari_libur[]" 
                                                    id="hari_{{ $day }}" value="{{ $day }}"
-                                                   {{-- 
-                                                      Logika yang benar:
-                                                      1. Cek dulu apakah ada 'old' input untuk 'hari_libur'. Ini terjadi jika validasi gagal.
-                                                      2. Jika tidak ada, gunakan variabel $hariLibur yang dikirim dari controller.
-                                                      Fungsi old() sudah menangani ini secara otomatis.
-                                                   --}}
                                                    {{ in_array($day, old('hari_libur', $hariLibur)) ? 'checked' : '' }}>
                                             <label class="form-check-label" for="hari_{{ $day }}">{{ $day }}</label>
                                         </div>

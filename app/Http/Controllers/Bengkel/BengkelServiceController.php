@@ -18,18 +18,16 @@ class BengkelServiceController extends Controller
         return view('bengkelService.dashboard', compact('bengkel'));
     }
 
-
     public function store(Request $request)
     {
         // Validasi data
-
         $validated = $request->validate([
-            'sparepart_id' => 'required|exists:spareparts,id', // Ganti 'jenis_barang' menjadi 'sparepart_id' untuk konsistensi
+            'sparepart_id' => 'required|exists:spareparts,id',
             'merk' => 'required|string|max:100',
             'harga_jual' => 'required|numeric',
             'harga_jasa' => 'required|numeric',
             'stok' => 'required|integer',
-            'id_bengkel' => 'required|exists:bengkel,id', // Validasi id_bengkel
+            'id_bengkel' => 'required|exists:bengkel,id',
         ]);
 
         // Ambil id_bengkel berdasarkan user yang login (opsional)
@@ -43,19 +41,16 @@ class BengkelServiceController extends Controller
         // Simpan data barang
         Barang::create([
             'sparepart_id' => $validated['sparepart_id'],
-            'id_bengkel' => $bengkel->id, // Gunakan id_bengkel dari bengkel user
+            'id_bengkel' => $bengkel->id,
             'merk' => $validated['merk'],
             'harga_jual' => $validated['harga_jual'],
             'harga_jasa' => $validated['harga_jasa'],
             'stok' => $validated['stok'],
         ]);
+
+        return redirect()->back()->with('success', 'Barang berhasil ditambahkan!');
     }
 
-
-
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, string $id)
     {
         // Clean the WhatsApp number
@@ -63,7 +58,6 @@ class BengkelServiceController extends Controller
             'whatsapp' => preg_replace('/[^0-9]/', '', $request->whatsapp),
         ]);
 
-    
         // Ambil bengkel berdasarkan id dan id_user yang sedang login
         $bengkel = Bengkel::where('id', $id)->where('id_user', Auth::id())->firstOrFail();
 
@@ -132,6 +126,27 @@ class BengkelServiceController extends Controller
         // return back()->with('success', 'Barang berhasil dihapus.');
     }
 
+    public function ratings(Request $request)
+    {
+        $user = Auth::user();
+        $bengkel = Bengkel::where('id_user', $user->id)->first();
 
+        if (!$bengkel) {
+            return view('bengkelService.ratings', ['ratings' => collect([]), 'average_rating' => 0]);
+        }
 
+        $query = $bengkel->ratings()->with('user');
+
+        if ($request->has('search') && !empty($request->search)) {
+            $search = $request->search;
+            $query->whereHas('user', function($q) use ($search) {
+                $q->where('name', 'LIKE', "%{$search}%");
+            })->orWhere('ulasan', 'LIKE', "%{$search}%");
+        }
+
+        $ratings = $query->latest()->paginate(10);
+        $average_rating = $bengkel->ratings()->avg('rating') ?? 0;
+
+        return view('bengkelService.ratings', compact('ratings', 'average_rating'));
+    }
 }

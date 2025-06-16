@@ -1,10 +1,10 @@
-<ul class="navbar-nav sidebar sidebar-dark accordion" id="accordionSidebar" style="background: linear-gradient(180deg, #d9534f 10%, #c73e3e 100%);">
+<ul class="navbar-nav sidebar sidebar-dark accordion" id="accordionSidebar" style="background-color: #d9534f; background-image: linear-gradient(180deg, #d9534f 10%, #c73e3e 100%); background-size: cover; font-family: 'Instrument Sans', sans-serif;">
     <!-- Sidebar Brand -->
     <a class="sidebar-brand d-flex align-items-center justify-content-center" href="{{ route('bengkelService.dashboard') }}">
         <div class="sidebar-brand-icon">
-            <img src="{{ asset('images/lg_tanpanama.png') }}" alt="Logo MotoBengkel" style="height: 45px;">
+            <img src="{{ asset('images/lg_tanpanama.png') }}" alt="Logo MotoBengkel" style="height: 40px; border-radius: 10px;">
         </div>
-        <div class="sidebar-brand-text mx-2" style="font-family: 'Instrument Sans', sans-serif; font-weight: 600;">MotoBengkel</div>
+        <div class="sidebar-brand-text mx-2" style="font-family: 'Instrument Sans', sans-serif; font-weight: 600; font-size: 1.25rem; color: #fff; text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);">MotoBengkel</div>
     </a>
 
     <!-- Divider -->
@@ -13,7 +13,7 @@
     <!-- Nav Item - Dashboard -->
     <li class="nav-item {{ request()->is('bengkelService/dashboard') || request()->is('dashboard') ? 'active' : '' }}">
         <a class="nav-link" href="{{ Auth::user()->usertype == 'bengkel' ? route('bengkelService.dashboard') : route('dashboard') }}">
-            <i class="fas fa-fw fa-tachometer-alt"></i>
+            <i class="fas fa-fw fa-tachometer-alt me-2" style="color: {{ request()->is('bengkelService/dashboard') || request()->is('dashboard') ? '#d9534f' : 'rgba(255, 255, 255, 0.7)' }};"></i>
             <span>Dashboard</span>
         </a>
     </li>
@@ -22,14 +22,14 @@
     <hr class="sidebar-divider my-2" style="border-color: rgba(255, 255, 255, 0.3);">
 
     <!-- Sidebar Heading -->
-    <div class="sidebar-heading text-white opacity-75" style="font-size: 0.9rem; font-weight: 500;">
+    <div class="sidebar-heading text-light text-uppercase" style="font-size: 0.85rem; opacity: 0.8; padding: 0.75rem 1.25rem; font-weight: 500;">
         Menu Bengkel
     </div>
 
     <!-- Nav Item - Kelola Toko -->
     <li class="nav-item {{ request()->is('barang/create') || request()->is('barang/create*') ? 'active' : '' }}">
         <a class="nav-link" href="{{ Auth::user()->usertype == 'bengkel' ? route('barang.create') : route('barang') }}">
-            <i class="fas fa-fw fa-tools"></i>
+            <i class="fas fa-fw fa-tools me-2" style="color: {{ request()->is('barang/create') || request()->is('barang/create*') ? '#d9534f' : 'rgba(255, 255, 255, 0.7)' }};"></i>
             <span>Kelola Toko</span>
         </a>
     </li>
@@ -37,7 +37,7 @@
     <!-- Nav Item - Rating dan Ulasan -->
     <li class="nav-item {{ request()->is('bengkelService/ratings') ? 'active' : '' }}">
         <a class="nav-link" href="{{ route('bengkelService.ratings') }}">
-            <i class="fas fa-fw fa-star"></i>
+            <i class="fas fa-fw fa-star me-2" style="color: {{ request()->is('bengkelService/ratings') ? '#d9534f' : 'rgba(255, 255, 255, 0.7)' }};"></i>
             <span>Rating dan Ulasan</span>
         </a>
     </li>
@@ -47,47 +47,72 @@
 </ul>
 
 <style>
+    /* Sidebar Styling */
     .sidebar {
         width: 250px;
         min-height: 100vh;
-        font-family: 'Instrument Sans', sans-serif;
+        transition: all 0.3s ease;
+        box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Sidebar Brand */
+    .sidebar-brand {
+        padding: 1.25rem 0;
+        transition: all 0.3s ease;
+    }
+
+    .sidebar-brand:hover {
+        transform: translateY(-2px);
     }
 
     .sidebar-brand-text {
-        color: white;
-        font-size: 1.2rem;
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #fff;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
     }
 
-    .nav-link {
-        color: rgba(255, 255, 255, 0.9) !important;
-        transition: all 0.3s ease;
+    /* Nav Item */
+    .nav-item .nav-link {
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 0.95rem;
         padding: 0.75rem 1.25rem;
         border-radius: 8px;
         margin: 0 0.5rem;
+        transition: all 0.3s ease;
     }
 
-    .nav-link:hover {
-        background-color: rgba(255, 255, 255, 0.15);
-        color: white !important;
+    .nav-item .nav-link:hover {
+        color: #fff;
+        background-color: rgba(255, 255, 255, 0.1);
         transform: translateX(5px);
     }
 
-    .nav-link i {
-        margin-right: 0.75rem;
-    }
-
     .nav-item.active .nav-link {
-        background-color: rgba(255, 255, 255, 0.25);
-        color: white !important;
+        color: #fff;
+        background-color: rgba(255, 255, 255, 0.2);
         font-weight: 600;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     }
 
-    .sidebar-divider {
-        border-width: 1px;
+    .nav-item .nav-link i {
+        transition: color 0.3s ease;
     }
 
+    .nav-item .nav-link:hover i {
+        color: #fff;
+    }
+
+    /* Sidebar Heading */
     .sidebar-heading {
-        padding: 0.75rem 1.5rem;
+        padding: 0.75rem 1.25rem;
         color: rgba(255, 255, 255, 0.7);
+        font-weight: 500;
+    }
+
+    /* Divider */
+    .sidebar-divider {
+        margin: 0.5rem 1rem;
+        border-width: 1px;
     }
 </style>

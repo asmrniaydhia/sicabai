@@ -16,8 +16,6 @@ use Illuminate\Support\Facades\Storage;
 use App\Models\Jasa;
 use App\Models\JasaService;
 
-
-
 class AdminController extends Controller
 {
     /**
@@ -26,14 +24,12 @@ class AdminController extends Controller
     public function index()
     {
         try {
-            // Statistik dasar
             $totalUsers = User::count();
             $totalAdmins = User::where('usertype', 'admin')->count();
             $totalRegularUsers = User::where('usertype', 'user')->count();
             $totalSpareparts = Sparepart::count();
             $totalBengkels = Bengkel::count() ?? 0;
             
-            // Data untuk grafik (contoh: user registration per bulan)
             $userRegistrationData = User::select(
                 DB::raw('YEAR(created_at) as year'),
                 DB::raw('MONTH(created_at) as month'),
@@ -45,7 +41,6 @@ class AdminController extends Controller
             ->limit(12)
             ->get();
 
-            // Aktivitas terbaru
             $recentUsers = User::latest()->limit(5)->get();
             $recentSpareparts = Sparepart::latest()->limit(5)->get();
 
@@ -65,8 +60,6 @@ class AdminController extends Controller
         }
     }
 
-    // ==================== SPAREPART MANAGEMENT ====================
-
     /**
      * Display sparepart list with search and pagination
      */
@@ -75,14 +68,12 @@ class AdminController extends Controller
         try {
             $query = Sparepart::query();
             
-            // Search functionality
             if ($request->has('search') && !empty($request->search)) {
                 $search = $request->search;
                 $query->where('nama_sparepart', 'LIKE', "%{$search}%")
                       ->orWhere('deskripsi', 'LIKE', "%{$search}%");
             }
             
-            // Sorting
             $sortBy = $request->get('sort_by', 'created_at');
             $sortOrder = $request->get('sort_order', 'desc');
             $query->orderBy($sortBy, $sortOrder);
@@ -195,8 +186,6 @@ class AdminController extends Controller
         }
     }
 
-    // ==================== USER MANAGEMENT ====================
-
     /**
      * Display user list with search and filter
      */
@@ -205,19 +194,16 @@ class AdminController extends Controller
         try {
             $query = User::query();
             
-            // Search functionality
             if ($request->has('search') && !empty($request->search)) {
                 $search = $request->search;
                 $query->where('name', 'LIKE', "%{$search}%")
                       ->orWhere('email', 'LIKE', "%{$search}%");
             }
             
-            // Filter by user type
             if ($request->has('usertype') && !empty($request->usertype)) {
                 $query->where('usertype', $request->usertype);
             }
             
-            // Sorting
             $sortBy = $request->get('sort_by', 'created_at');
             $sortOrder = $request->get('sort_order', 'desc');
             $query->orderBy($sortBy, $sortOrder);
@@ -232,38 +218,62 @@ class AdminController extends Controller
     }
 
     /**
-     * Store new user aww awww 
+     * Store new user
      */
     public function storeUser(Request $request)
     {
         try {
             $validated = $request->validate([
-                'name' => 'required|string|max:255',
-                'email' => 'required|string|email|max:255|unique:users',
+                'name' => 'required|string|max:255|min:3',
+                'email' => 'required|string|email|max:255|unique:users,email',
                 'password' => 'required|string|min:8|confirmed',
-                'usertype' => 'required|in:admin,user',
-                'phone' => 'nullable|string|max:20',
-                'address' => 'nullable|string|max:500',
+                'usertype' => 'required|in:admin,user,bengkel',
             ], [
                 'name.required' => 'Nama harus diisi',
+                'name.min' => 'Nama minimal 3 karakter',
                 'email.required' => 'Email harus diisi',
+                'email.email' => 'Format email tidak valid',
                 'email.unique' => 'Email sudah terdaftar',
                 'password.required' => 'Password harus diisi',
                 'password.min' => 'Password minimal 8 karakter',
                 'password.confirmed' => 'Konfirmasi password tidak cocok',
+                'usertype.required' => 'Role harus dipilih',
+                'usertype.in' => 'Role yang dipilih tidak valid',
+            ]);
+
+            Log::info('Attempting to create user with data:', [
+                'name' => $validated['name'],
+                'email' => $validated['email'],
+                'usertype' => $validated['usertype'],
             ]);
 
             $validated['password'] = Hash::make($validated['password']);
+            $validated['email_verified_at'] = now();
             
-            User::create($validated);
+            $user = User::create($validated);
+
+            Log::info('User created successfully:', ['user_id' => $user->id]);
 
             return redirect()->route('admin.user')
-                           ->with('success', 'User berhasil ditambahkan!');
-        } catch (\Exception $e) {
-            Log::error('Store user error: ' . $e->getMessage());
+                        ->with('success', 'User berhasil ditambahkan!');
+                        
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            Log::error('Validation failed when creating user:', $e->errors());
             return redirect()->back()
-                           ->withInput()
-                           ->with('error', 'Terjadi kesalahan dalam menambahkan user');
+                        ->withInput()
+                        ->withErrors($e->errors());
+                        
+        } catch (\Exception $e) {
+            Log::error('Error creating user:', [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString(),
+                'input_data' => $request->except(['password', 'password_confirmation'])
+            ]);
+            return redirect()->back()
+                        ->withInput()
+                        ->with('error', 'Terjadi kesalahan dalam menambahkan user: ' . $e->getMessage());
         }
     }
 
@@ -299,7 +309,6 @@ class AdminController extends Controller
                 'password' => 'nullable|string|min:8|confirmed',
             ]);
 
-            // Only update password if provided
             if (!empty($validated['password'])) {
                 $validated['password'] = Hash::make($validated['password']);
             } else {
@@ -326,7 +335,6 @@ class AdminController extends Controller
         try {
             $user = User::findOrFail($id);
             
-            // Prevent deleting own account
             if ($user->id === Auth::id()) {
                 return redirect()->back()
                                ->with('error', 'Tidak dapat menghapus akun sendiri');
@@ -364,44 +372,43 @@ class AdminController extends Controller
         }
     }
 
-    // ==================== BENGKEL MANAGEMENT ====================
-
-   
     /**
      * Menampilkan daftar bengkel
      */
     public function bengkel(Request $request)
-    {
-        try {
-            $query = Bengkel::with('user');
-            
-            // Filter berdasarkan jenis bengkel
-            if ($request->has('jenis') && !empty($request->jenis)) {
-                $query->where('jenis_bengkel', $request->jenis);
-            }
-            
-            // Search functionality
-            if ($request->has('search') && !empty($request->search)) {
-                $search = $request->search;
-                $query->where(function($q) use ($search) {
-                    $q->where('nama', 'LIKE', "%{$search}%")
-                      ->orWhere('alamat', 'LIKE', "%{$search}%")
-                      ->orWhere('whatsapp', 'LIKE', "%{$search}%")
-                      ->orWhereHas('user', function($q) use ($search) {
-                          $q->where('name', 'LIKE', "%{$search}%");
-                      });
-                });
-            }
-            
-            $bengkels = $query->latest()->paginate(10);
-            $users = User::where('usertype', 'user')->get();
-            
-            return view('admin.bengkel', compact('bengkels', 'users'));
-        } catch (\Exception $e) {
-            Log::error('Error di bengkel index: ' . $e->getMessage());
-            return redirect()->back()->with('error', 'Terjadi kesalahan saat memuat data bengkel');
+{
+    try {
+        $query = Bengkel::with('user');
+        
+        if ($request->has('jenis') && !empty($request->jenis)) {
+            $query->where('jenis_bengkel', $request->jenis);
+            Log::info('Filtering by jenis: ' . $request->jenis);
         }
+        
+        if ($request->has('search') && !empty($request->search)) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('nama', 'LIKE', "%{$search}%")
+                  ->orWhere('alamat', 'LIKE', "%{$search}%")
+                  ->orWhere('whatsapp', 'LIKE', "%{$search}%")
+                  ->orWhereHas('user', function($q) use ($search) {
+                      $q->where('name', 'LIKE', "%{$search}%");
+                  });
+            });
+            Log::info('Searching for: ' . $search);
+        }
+        
+        $bengkels = $query->latest()->paginate(10);
+        $users = User::where('usertype', 'bengkel')
+                    ->whereDoesntHave('bengkel')
+                    ->get();
+        
+        return view('admin.bengkel', compact('bengkels', 'users'));
+    } catch (\Exception $e) {
+        Log::error('Error di bengkel index: ' . $e->getMessage());
+        return redirect()->back()->with('error', 'Terjadi kesalahan saat memuat data bengkel');
     }
+}
 
     /**
      * Menyimpan bengkel baru
@@ -410,8 +417,8 @@ class AdminController extends Controller
     {
         $request->validate([
             'id_user' => 'required|exists:users,id',
-            'nama' => 'required|string|max:255',
-            'whatsapp' => 'required|string|max:15',
+            'nama' => 'required|string|max:100',
+            'whatsapp' => 'required|regex:/^\+?[0-9]{10,13}$/',
             'jenis_bengkel' => 'required|in:service,tambal_ban',
             'foto_bengkel' => 'required|image|mimes:jpeg,png,jpg|max:2048',
             'alamat' => 'required|string',
@@ -419,26 +426,32 @@ class AdminController extends Controller
             'jam_buka' => 'required|date_format:H:i',
             'jam_tutup' => 'required|date_format:H:i|after:jam_buka',
             'hari_libur' => 'nullable|array',
-            'hari_libur.*' => 'string',
-            'latitude' => 'required|numeric',
-            'longitude' => 'required|numeric',
+            'hari_libur.*' => 'in:Senin,Selasa,Rabu,Kamis,Jumat,Sabtu,Minggu',
+            'latitude' => 'required|numeric|between:-90,90',
+            'longitude' => 'required|numeric|between:-180,180',
         ]);
 
         try {
-            // Upload foto bengkel
-            $fotoPath = $request->file('foto_bengkel')->store('bengkel_images', 'public');
+            $whatsapp = $request->whatsapp;
+            if (preg_match('/^0/', $whatsapp)) {
+                $whatsapp = '+62' . substr(preg_replace('/[^0-9]/', '', $whatsapp), 1);
+            } elseif (!preg_match('/^\+/', $whatsapp)) {
+                $whatsapp = '+62' . preg_replace('/[^0-9]/', '', $whatsapp);
+            }
+
+            $fotoPath = $request->file('foto_bengkel')->store('bengkel', 'public');
 
             $bengkel = Bengkel::create([
                 'id_user' => $request->id_user,
                 'nama' => $request->nama,
-                'whatsapp' => $request->whatsapp,
+                'whatsapp' => $whatsapp,
                 'jenis_bengkel' => $request->jenis_bengkel,
                 'foto_bengkel' => $fotoPath,
                 'alamat' => $request->alamat,
                 'jasa_penjemputan' => $request->jasa_penjemputan,
                 'jam_buka' => $request->jam_buka,
                 'jam_tutup' => $request->jam_tutup,
-                'hari_libur' => $request->hari_libur ? implode(',', $request->hari_libur) : null,
+                'hari_libur' => $request->hari_libur ?? [],
                 'latitude' => $request->latitude,
                 'longitude' => $request->longitude,
             ]);
@@ -453,63 +466,48 @@ class AdminController extends Controller
     /**
      * Menampilkan form edit bengkel
      */
-    // public function editBengkel($id)
-    // {
-    // try {
-    //     $bengkel = Bengkel::findOrFail($id);
-    //     $users = User::where('usertype', 'user')->get();
-    //     $hariLibur = $bengkel->hari_libur ? explode(',', $bengkel->hari_libur) : [];
-        
-    //     return view('admin.edit_bengkel', compact('bengkel', 'users', 'hariLibur'));
-    // } catch (\Exception $e) {
-    //     Log::error('Error edit bengkel: ' . $e->getMessage());
-    //     return redirect()->route('admin.bengkel.index')->with('error', 'Bengkel tidak ditemukan');
-    // }
-    // }
-
     public function editBengkel($id)
     {
         try {
             $bengkel = Bengkel::findOrFail($id);
-            $users = User::where('usertype', 'user')->get();
-            
-            // --- PERUBAHAN DI SINI ---
-            // Kita tidak lagi menggunakan explode. Kita asumsikan $bengkel->hari_libur sudah array.
-            // Jika nilainya null (kosong), kita ubah menjadi array kosong.
+            $users = User::where('usertype', 'bengkel')
+                        ->whereDoesntHave('bengkel', function ($query) use ($id) {
+                            $query->where('id', '!=', $id);
+                        })
+                        ->get();
             $hariLibur = $bengkel->hari_libur ?? [];
 
-            // Pastikan sekali lagi bahwa $hariLibur adalah array
             if (!is_array($hariLibur)) {
-                // Jika ternyata bukan array (misal: string kosong), jadikan array kosong untuk keamanan
                 $hariLibur = [];
             }
             
             return view('admin.edit_bengkel', compact('bengkel', 'users', 'hariLibur'));
-
         } catch (\Exception $e) {
             Log::error('Error edit bengkel: ' . $e->getMessage());
-            // Perbaikan kecil: Arahkan ke route 'admin.bengkel' bukan 'admin.bengkel.index' jika itu nama route list Anda
             return redirect()->route('admin.bengkel')->with('error', 'Bengkel tidak ditemukan atau terjadi kesalahan.');
         }
     }
+
+    /**
+     * Memperbarui bengkel
+     */
     public function updateBengkel(Request $request, $id)
     {
-        // Validasi input
         $request->validate([
             'id_user' => 'required|exists:users,id',
-            'nama' => 'required|string|max:255',
-            'whatsapp' => 'required|string|max:15',
+            'nama' => 'required|string|max:100',
+            'whatsapp' => 'required|regex:/^\+?[0-9]{10,13}$/',
             'jenis_bengkel' => 'required|in:service,tambal_ban',
             'foto_bengkel' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-            'hapus_foto' => 'nullable|boolean', // Tambahkan validasi untuk hapus_foto
+            'hapus_foto' => 'nullable|boolean',
             'alamat' => 'required|string',
             'jasa_penjemputan' => 'required|in:ada,tidak',
-            'jam_buka' => 'required|date_format:H:i:s',
-            'jam_tutup' => 'required|date_format:H:i:s|after:jam_buka',
+            'jam_buka' => 'required|date_format:H:i',
+            'jam_tutup' => 'required|date_format:H:i|after:jam_buka',
             'hari_libur' => 'nullable|array',
-            'hari_libur.*' => 'string|in:Senin,Selasa,Rabu,Kamis,Jumat,Sabtu,Minggu',
-            'latitude' => 'required|numeric',
-            'longitude' => 'required|numeric',
+            'hari_libur.*' => 'in:Senin,Selasa,Rabu,Kamis,Jumat,Sabtu,Minggu',
+            'latitude' => 'required|numeric|between:-90,90',
+            'longitude' => 'required|numeric|between:-180,180',
         ], [
             'id_user.required' => 'Pemilik bengkel harus dipilih.',
             'nama.required' => 'Nama bengkel harus diisi.',
@@ -529,38 +527,41 @@ class AdminController extends Controller
         try {
             $bengkel = Bengkel::findOrFail($id);
 
-            // Siapkan data untuk update
+            $whatsapp = $request->whatsapp;
+            if (preg_match('/^0/', $whatsapp)) {
+                $whatsapp = '+62' . substr(preg_replace('/[^0-9]/', '', $whatsapp), 1);
+            } elseif (!preg_match('/^\+/', $whatsapp)) {
+                $whatsapp = '+62' . preg_replace('/[^0-9]/', '', $whatsapp);
+            }
+
             $data = [
                 'id_user' => $request->id_user,
                 'nama' => $request->nama,
-                'whatsapp' => $request->whatsapp,
+                'whatsapp' => $whatsapp,
                 'jenis_bengkel' => $request->jenis_bengkel,
                 'alamat' => $request->alamat,
                 'jasa_penjemputan' => $request->jasa_penjemputan,
                 'jam_buka' => $request->jam_buka,
                 'jam_tutup' => $request->jam_tutup,
-                'hari_libur' => $request->hari_libur ? implode(',', $request->hari_libur) : null,
+                'hari_libur' => $request->hari_libur ?? [],
                 'latitude' => $request->latitude,
                 'longitude' => $request->longitude,
             ];
 
-            // Penanganan foto bengkel
+            $fotoPath = $bengkel->foto_bengkel;
             if ($request->has('hapus_foto') && $request->hapus_foto == '1') {
-                // Hapus foto lama jika ada
                 if ($bengkel->foto_bengkel && Storage::disk('public')->exists($bengkel->foto_bengkel)) {
                     Storage::disk('public')->delete($bengkel->foto_bengkel);
                 }
-                $data['foto_bengkel'] = null; // Set foto menjadi null
+                $data['foto_bengkel'] = null;
             } elseif ($request->hasFile('foto_bengkel')) {
-                // Hapus foto lama jika ada
                 if ($bengkel->foto_bengkel && Storage::disk('public')->exists($bengkel->foto_bengkel)) {
                     Storage::disk('public')->delete($bengkel->foto_bengkel);
                 }
-                // Simpan foto baru
-                $data['foto_bengkel'] = $request->file('foto_bengkel')->store('bengkel_images', 'public');
+                $data['foto_bengkel'] = $request->file('foto_bengkel')->store('bengkel', 'public');
             }
 
-            // Update data bengkel
+            
             $bengkel->update($data);
 
             return redirect()->route('admin.bengkel')->with('success', 'Data bengkel berhasil diperbarui!');
@@ -568,7 +569,7 @@ class AdminController extends Controller
             Log::error('Error update bengkel: ' . $e->getMessage());
             return redirect()->back()->withInput()->with('error', 'Gagal memperbarui data bengkel: ' . $e->getMessage());
         }
-    }                                                                                                                                                                                                                                                                                                                                                            
+    }
 
     /**
      * Menghapus bengkel
@@ -578,7 +579,6 @@ class AdminController extends Controller
         try {
             $bengkel = Bengkel::findOrFail($id);
             
-            // Hapus foto
             if ($bengkel->foto_bengkel) {
                 Storage::disk('public')->delete($bengkel->foto_bengkel);
             }
@@ -592,10 +592,6 @@ class AdminController extends Controller
         }
     }
 
-
-
-    // ==================== JASA MANAGEMENT ====================
-
     /**
      * Menampilkan daftar semua jasa layanan
      */
@@ -604,7 +600,6 @@ class AdminController extends Controller
         try {
             $query = Jasa::query();
             
-            // Fungsi pencarian
             if ($request->has('search') && !empty($request->search)) {
                 $search = $request->search;
                 $query->where('jenis_jasa', 'LIKE', "%{$search}%")
@@ -613,7 +608,7 @@ class AdminController extends Controller
             
             $jasas = $query->latest()->paginate(10);
             
-            return view('admin.jasa', compact('jasas')); // Anda perlu membuat view admin.jasa.blade.php
+            return view('admin.jasa', compact('jasas'));
         } catch (\Exception $e) {
             Log::error('Error di Jasa index: ' . $e->getMessage());
             return redirect()->back()->with('error', 'Terjadi kesalahan saat memuat data jasa');
@@ -650,7 +645,7 @@ class AdminController extends Controller
     {
         try {
             $jasa = Jasa::findOrFail($id);
-            return view('admin.edit_jasa', compact('jasa')); // Anda perlu membuat view admin.edit_jasa.blade.php
+            return view('admin.edit_jasa', compact('jasa'));
         } catch (\Exception $e) {
             Log::error('Error edit jasa: ' . $e->getMessage());
             return redirect()->route('admin.jasa')->with('error', 'Jasa layanan tidak ditemukan');
@@ -698,13 +693,6 @@ class AdminController extends Controller
         }
     }
 
-
-    
-    
-
-    
-    // ==================== API ENDPOINTS FOR DASHBOARD ====================
-
     /**
      * Get dashboard statistics via API
      */
@@ -745,8 +733,6 @@ class AdminController extends Controller
             return response()->json(['error' => 'Failed to fetch chart data'], 500);
         }
     }
-
-    // ==================== UTILITY METHODS ====================
 
     /**
      * Export data to CSV
@@ -791,20 +777,14 @@ class AdminController extends Controller
     public function backupDatabase()
     {
         try {
-            // This is a simple example - you might want to use a proper backup package
             $filename = 'backup_' . date('Y-m-d_H-i-s') . '.sql';
-            
-            // Log the backup action
             Log::info('Database backup initiated by admin: ' . Auth::user()->name);
-            
             return redirect()->back()->with('success', 'Backup database berhasil dimulai');
         } catch (\Exception $e) {
             Log::error('Backup database error: ' . $e->getMessage());
             return redirect()->back()->with('error', 'Gagal melakukan backup database');
         }
     }
-
-    // ==================== UNUSED METHODS (kept for compatibility) ====================
 
     public function create() { /* Not used */ }
     public function store(Request $request) { /* Not used */ }
