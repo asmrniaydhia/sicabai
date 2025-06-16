@@ -12,16 +12,24 @@
             @foreach ($bengkels as $bengkel)
                 <div class="col mb-4">
                     <div class="card h-100">
-                        <img src="{{ asset('storage/bengkel/' . $bengkel->foto_bengkel) }}"
-                             class="card-img-top"
-                             alt="{{ $bengkel->nama }}">
+                        @if ($bengkel->foto_bengkel && file_exists(storage_path('app/public/' . $bengkel->foto_bengkel)))
+                            <img src="{{ asset('storage/' . $bengkel->foto_bengkel) }}"
+                                 class="card-img-top"
+                                 alt="{{ $bengkel->nama }}"
+                                 style="width: 283.5px; height: 180px; object-fit: cover;">
+                        @else
+                            <img src="https://via.placeholder.com/150x150"
+                                 class="card-img-top"
+                                 alt="No Foto {{ $bengkel->nama }}"
+                                 style="width: 150px; height: 150px;">
+                        @endif
                         <div class="card-body d-flex flex-column">
                             <h5 class="card-title fw-bold">{{ $bengkel->nama }}</h5>
                             <div class="d-flex mb-3">
                                 <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $bengkel->whatsapp) }}"
                                    target="_blank"
                                    class="btn btn-success btn-sm flex-fill mr-3">Hubungi</a>
-                                <a href=""
+                                <a href="{{ route('user.detail', $bengkel->id) }}"
                                    class="btn btn-primary btn-sm flex-fill">Detail</a>
                             </div>
                             <p class="card-text">Jenis: {{ ucfirst($bengkel->jenis_bengkel) }}</p>

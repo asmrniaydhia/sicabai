@@ -29,6 +29,7 @@ require __DIR__.'/auth.php';
 
 Route::middleware(['auth', 'userMiddleware'])->group(function () {
     Route::get('/user/dashboard', [UserController::class, 'index'])->name('user.dashboard');
+    Route::get('/bengkel/{id}/detail', [UserController::class, 'show'])->name('user.detail');
 });
 
 // Admin routes with proper naming

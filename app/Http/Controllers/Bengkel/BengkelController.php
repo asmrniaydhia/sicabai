@@ -41,7 +41,7 @@ class BengkelController extends Controller
 
         $validated = $request->validate([
             'nama' => 'required|string|max:100',
-            'whatsapp' => 'required|regex:/^[0-9]{10,13}$/',
+            'whatsapp' => 'required|regex:/^[0-9]{10,13}$/', // Tetap validasi 10-13 digit lokal
             'jenis_bengkel' => 'required|in:service,tambal_ban',
             'foto_bengkel' => 'required|image|mimes:jpeg,png,jpg|max:2048',
             'alamat' => 'required|string',
@@ -54,6 +54,14 @@ class BengkelController extends Controller
             'lng' => 'required|numeric|between:-180,180',
         ]);
 
+        // Konversi nomor WhatsApp ke format internasional
+        $whatsapp = $validated['whatsapp'];
+        if (preg_match('/^0/', $whatsapp)) {
+            $whatsapp = '+62' . substr(preg_replace('/[^0-9]/', '', $whatsapp), 1);
+        } elseif (!preg_match('/^\+/', $whatsapp)) {
+            $whatsapp = '+62' . preg_replace('/[^0-9]/', '', $whatsapp);
+        }
+
         // Handle file upload
         $fotoPath = $request->file('foto_bengkel')->store('bengkel', 'public');
 
@@ -61,7 +69,7 @@ class BengkelController extends Controller
         Bengkel::create([
             'id_user' => Auth::id(),
             'nama' => $validated['nama'],
-            'whatsapp' => $validated['whatsapp'],
+            'whatsapp' => $whatsapp,
             'jenis_bengkel' => $validated['jenis_bengkel'],
             'foto_bengkel' => $fotoPath,
             'alamat' => $validated['alamat'],
@@ -81,23 +89,13 @@ class BengkelController extends Controller
         }
     }
 
+
     /**
      * Display the specified resource.
      */
     public function show(string $id)
     {
-        // Placeholder untuk detail bengkel
-        $bengkel = Bengkel::with('ratings.user')
-            ->leftJoin('ratings', 'bengkel.id', '=', 'ratings.id_bengkel')
-            ->select(
-                'bengkel.*',
-                DB::raw('COALESCE(AVG(ratings.rating), 0) as average_rating')
-            )
-            ->where('bengkel.id', $id)
-            ->groupBy('bengkel.id')
-            ->firstOrFail();
 
-        return view('bengkel_detail', compact('bengkel'));
     }
 
     /**

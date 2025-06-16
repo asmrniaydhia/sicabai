@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('id_user')->constrained('users')->onDelete('cascade');
             $table->string('nama', 100);
-            $table->string('whatsapp', 13);
+            $table->string('whatsapp', 15); // Diperpanjang untuk keamanan
             $table->enum('jenis_bengkel', ['service', 'tambal_ban']);
             $table->string('foto_bengkel', 255);
             $table->text('alamat');
