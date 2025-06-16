@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Barang extends Model
 {
     protected $table = 'barangs';
-    protected $fillable = ['sparepart_id', 'id_user', 'id_bengkel', 'merk', 'harga_jual', 'stok'];
+    protected $fillable = ['sparepart_id', 'id_user', 'id_bengkel', 'merk', 'harga_jual','harga_jasa', 'stok'];
 
     public function sparepart()
     {

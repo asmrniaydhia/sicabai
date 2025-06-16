@@ -26,7 +26,9 @@ class BarangController extends Controller
             'sparepart_id' => 'required|exists:spareparts,id',
             'merk' => 'required|string|max:100',
             'harga_jual' => 'required|numeric',
+            'harga_jasa' => 'required|numeric',
             'stok' => 'required|integer',
+            
         ]);
 
         $user = Auth::user();
@@ -42,6 +44,7 @@ class BarangController extends Controller
             'id_bengkel' => $bengkel->id, // ID bengkel terkait
             'merk' => $validated['merk'],
             'harga_jual' => $validated['harga_jual'],
+            'harga_jasa' => $validated['harga_jasa'],
             'stok' => $validated['stok'],
         ]);
 
@@ -67,6 +70,7 @@ class BarangController extends Controller
             'sparepart_id' => 'required|exists:spareparts,id',
             'merk' => 'required|string|max:100',
             'harga_jual' => 'required|numeric',
+            'harga_jasa' => 'required|numeric',
             'stok' => 'required|integer',
         ]);
 
@@ -79,6 +83,7 @@ class BarangController extends Controller
             'sparepart_id' => $validated['sparepart_id'],
             'merk' => $validated['merk'],
             'harga_jual' => $validated['harga_jual'],
+            'harga_jasa' => $validated['harga_jasa'],
             'stok' => $validated['stok'],
         ]);
 

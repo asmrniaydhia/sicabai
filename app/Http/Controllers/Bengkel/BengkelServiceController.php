@@ -36,6 +36,7 @@ class BengkelServiceController extends Controller
             'sparepart_id' => 'required|exists:spareparts,id', // Ganti 'jenis_barang' menjadi 'sparepart_id' untuk konsistensi
             'merk' => 'required|string|max:100',
             'harga_jual' => 'required|numeric',
+            'harga_jasa' => 'required|numeric',
             'stok' => 'required|integer',
             'id_bengkel' => 'required|exists:bengkel,id', // Validasi id_bengkel
         ]);
@@ -54,6 +55,7 @@ class BengkelServiceController extends Controller
             'id_bengkel' => $bengkel->id, // Gunakan id_bengkel dari bengkel user
             'merk' => $validated['merk'],
             'harga_jual' => $validated['harga_jual'],
+            'harga_jasa' => $validated['harga_jasa'],
             'stok' => $validated['stok'],
         ]);
 

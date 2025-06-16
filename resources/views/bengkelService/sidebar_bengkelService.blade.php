@@ -24,7 +24,7 @@
     <li class="nav-item {{ request()->is('barang/create') || request()->is('barang/create*') ? 'active' : '' }}">
         <a class="nav-link" href="{{ Auth::user()->usertype == 'bengkel' ? route('barang.create') : route('barang') }}">
             <i class="fas fa-fw fa-wrench"></i> <!-- Ganti ikon yang lebih relevan -->
-            <span>Daftar Barang</span>
+            <span> Kelola Toko </span>
         </a>
     </li>
 </ul>

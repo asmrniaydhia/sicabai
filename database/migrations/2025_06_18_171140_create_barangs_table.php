@@ -18,6 +18,7 @@ return new class extends Migration
             $table->foreignId('sparepart_id')->constrained('spareparts')->onDelete('cascade'); // Eksplisitkan tabel spareparts
             $table->string('merk', 100); // Batasi panjang merk
             $table->decimal('harga_jual', 12, 2);
+            $table->decimal('harga_jasa', 12, 2);
             $table->unsignedInteger('stok'); // Tambahkan unsigned untuk stok
             $table->timestamps();
 
