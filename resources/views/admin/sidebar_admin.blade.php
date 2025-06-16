@@ -38,6 +38,13 @@
         </a>
     </li>
 
+    <li class="nav-item {{ (request()->is('admin/jasa') || request()->is('sparepart')) ? 'active' : '' }}">
+        <a class="nav-link" href="{{ Auth::user()->usertype == 'admin' ? route('admin.sparepart') : route('sparepart') }}">
+            <i class="fas fa-boxes "></i>
+            <span>Kategori Jasa</span>
+        </a>
+    </li>
+
     <!-- Add additional sidebar items as needed -->
 
     <hr class="sidebar-divider d-none d-md-block">

@@ -448,18 +448,44 @@ class AdminController extends Controller
     /**
      * Menampilkan form edit bengkel
      */
+    // public function editBengkel($id)
+    // {
+    // try {
+    //     $bengkel = Bengkel::findOrFail($id);
+    //     $users = User::where('usertype', 'user')->get();
+    //     $hariLibur = $bengkel->hari_libur ? explode(',', $bengkel->hari_libur) : [];
+        
+    //     return view('admin.edit_bengkel', compact('bengkel', 'users', 'hariLibur'));
+    // } catch (\Exception $e) {
+    //     Log::error('Error edit bengkel: ' . $e->getMessage());
+    //     return redirect()->route('admin.bengkel.index')->with('error', 'Bengkel tidak ditemukan');
+    // }
+    // }
+
     public function editBengkel($id)
     {
-    try {
-        $bengkel = Bengkel::findOrFail($id);
-        $users = User::where('usertype', 'user')->get();
-        $hariLibur = $bengkel->hari_libur ? explode(',', $bengkel->hari_libur) : [];
-        
-        return view('admin.edit_bengkel', compact('bengkel', 'users', 'hariLibur'));
-    } catch (\Exception $e) {
-        Log::error('Error edit bengkel: ' . $e->getMessage());
-        return redirect()->route('admin.bengkel.index')->with('error', 'Bengkel tidak ditemukan');
-    }
+        try {
+            $bengkel = Bengkel::findOrFail($id);
+            $users = User::where('usertype', 'user')->get();
+            
+            // --- PERUBAHAN DI SINI ---
+            // Kita tidak lagi menggunakan explode. Kita asumsikan $bengkel->hari_libur sudah array.
+            // Jika nilainya null (kosong), kita ubah menjadi array kosong.
+            $hariLibur = $bengkel->hari_libur ?? [];
+
+            // Pastikan sekali lagi bahwa $hariLibur adalah array
+            if (!is_array($hariLibur)) {
+                // Jika ternyata bukan array (misal: string kosong), jadikan array kosong untuk keamanan
+                $hariLibur = [];
+            }
+            
+            return view('admin.edit_bengkel', compact('bengkel', 'users', 'hariLibur'));
+
+        } catch (\Exception $e) {
+            Log::error('Error edit bengkel: ' . $e->getMessage());
+            // Perbaikan kecil: Arahkan ke route 'admin.bengkel' bukan 'admin.bengkel.index' jika itu nama route list Anda
+            return redirect()->route('admin.bengkel')->with('error', 'Bengkel tidak ditemukan atau terjadi kesalahan.');
+        }
     }
     public function updateBengkel(Request $request, $id)
     {
@@ -473,8 +499,8 @@ class AdminController extends Controller
             'hapus_foto' => 'nullable|boolean', // Tambahkan validasi untuk hapus_foto
             'alamat' => 'required|string',
             'jasa_penjemputan' => 'required|in:ada,tidak',
-            'jam_buka' => 'required|date_format:H:i',
-            'jam_tutup' => 'required|date_format:H:i|after:jam_buka',
+            'jam_buka' => 'required|date_format:H:i:s',
+            'jam_tutup' => 'required|date_format:H:i:s|after:jam_buka',
             'hari_libur' => 'nullable|array',
             'hari_libur.*' => 'string|in:Senin,Selasa,Rabu,Kamis,Jumat,Sabtu,Minggu',
             'latitude' => 'required|numeric',

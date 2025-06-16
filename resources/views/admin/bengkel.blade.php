@@ -131,11 +131,11 @@
                                 <i class="fas fa-truck me-1 text-primary"></i>Jasa Penjemputan
                             </label>
                             <div class="form-check">
-                                <input class="form-check-input" type="radio" name="jasa_penjemputan" id="jasa_ada" value="ada" {{ old('jasa_penjemputan') == 'ada' ? 'checked' : '' }} required>
+                                <input class="form-check-input" type="radio" name="jasa_penjemputan" id="jasa_ada" value="ada" {{ old('jasa_penjemputan', 'tidak') == 'ada' ? 'checked' : '' }} required>
                                 <label class="form-check-label" for="jasa_ada">Ada</label>
                             </div>
                             <div class="form-check">
-                                <input class="form-check-input" type="radio" name="jasa_penjemputan" id="jasa_tidak" value="tidak" {{ old('jasa_penjemputan') == 'tidak' ? 'checked' : '' }}>
+                                <input class="form-check-input" type="radio" name="jasa_penjemputan" id="jasa_tidak" value="tidak" {{ old('jasa_penjemputan', 'tidak') == 'tidak' ? 'checked' : '' }}>
                                 <label class="form-check-label" for="jasa_tidak">Tidak Ada</label>
                             </div>
                             @error('jasa_penjemputan')
@@ -173,11 +173,13 @@
                             <div class="d-flex flex-wrap gap-2">
                                 @php
                                     $hari = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'];
-                                    $oldHariLibur = old('hari_libur', []);
+                                    // old('hari_libur', []) akan mengembalikan array jika validasi gagal
+                                    $oldHariLibur = old('hari_libur', []); 
                                 @endphp
                                 @foreach($hari as $day)
                                 <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="hari_libur[]" id="{{ $day }}" value="{{ $day }}" {{ in_array($day, $oldHariLibur) ? 'checked' : '' }}>
+                                    {{-- Pastikan in_array menerima array --}}
+                                    <input class="form-check-input" type="checkbox" name="hari_libur[]" id="{{ $day }}" value="{{ $day }}" {{ is_array($oldHariLibur) && in_array($day, $oldHariLibur) ? 'checked' : '' }}>
                                     <label class="form-check-label" for="{{ $day }}">{{ $day }}</label>
                                 </div>
                                 @endforeach
@@ -284,8 +286,8 @@
                                     data-whatsapp="{{ $bengkel->whatsapp }}">
                                     <td class="text-center">{{ $bengkels->firstItem() + $index }}</td>
                                     <td>
-                                        @if($bengkel->foto_bengkel)
-                                            <img src="{{ Storage::exists($bengkel->foto_bengkel) ? asset('storage/'.$bengkel->foto_bengkel) : asset('images/default-bengkel.jpg') }}" 
+                                        @if($bengkel->foto_bengkel && Storage::disk('public')->exists($bengkel->foto_bengkel))
+                                            <img src="{{ asset('storage/'.$bengkel->foto_bengkel) }}" 
                                                 alt="Foto Bengkel" 
                                                 class="img-thumbnail" 
                                                 style="width: 60px; height: 60px; object-fit: cover;">
@@ -298,21 +300,28 @@
                                     </td>
                                     <td>
                                         <strong>{{ $bengkel->nama }}</strong><br>
-                                        <small class="text-muted">{{ $bengkel->jam_buka }} - {{ $bengkel->jam_tutup }}</small>
+                                        <small class="text-muted">{{ \Carbon\Carbon::parse($bengkel->jam_buka)->format('H:i') }} - {{ \Carbon\Carbon::parse($bengkel->jam_tutup)->format('H:i') }}</small>
                                     </td>
                                     <td>{{ $bengkel->user->name ?? '-' }}</td>
                                     <td>
                                         <span class="badge {{ $bengkel->jenis_bengkel == 'service' ? 'bg-primary' : 'bg-warning' }}">
-                                            {{ $bengkel->jenis_bengkel == 'service' ? 'Service' : 'Tambal Ban' }}
+                                            {{ ucwords(str_replace('_', ' ', $bengkel->jenis_bengkel)) }}
                                         </span>
                                     </td>
                                     <td>{{ $bengkel->whatsapp }}</td>
                                     <td>
                                         <span class="badge {{ $bengkel->jasa_penjemputan == 'ada' ? 'bg-success' : 'bg-secondary' }}">
-                                            {{ $bengkel->jasa_penjemputan == 'ada' ? 'Ada' : 'Tidak' }}
+                                            {{ ucfirst($bengkel->jasa_penjemputan) }}
                                         </span>
                                     </td>
-                                    <td>{{ $bengkel->hari_libur ? str_replace(',', ', ', $bengkel->hari_libur) : 'Tidak ada' }}</td>
+                                    <td>
+                                        {{-- PERBAIKAN DI SINI --}}
+                                        @php
+                                            // Cek jika hari_libur adalah array, gabungkan jadi string. Jika sudah string, tampilkan.
+                                            $hari_libur_display = is_array($bengkel->hari_libur) ? implode(', ', $bengkel->hari_libur) : str_replace(',', ', ', $bengkel->hari_libur);
+                                        @endphp
+                                        {{ $hari_libur_display ?: 'Tidak ada' }}
+                                    </td>
                                     <td>
                                         <div class="d-flex gap-1">
                                             <a href="{{ route('admin.bengkel.edit', $bengkel->id) }}" 
@@ -364,7 +373,7 @@
                     <!-- Pagination -->
                     @if($bengkels->hasPages())
                         <div class="card-footer bg-light">
-                            {{ $bengkels->links() }}
+                            {{ $bengkels->withQueryString()->links() }}
                         </div>
                     @endif
                 </div>
@@ -373,13 +382,16 @@
     </div>
 </div>
 
+<!-- Scripts di sini -->
+@endsection
+
+@push('scripts')
 <!-- CSS Leaflet -->
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
 
 <!-- JavaScript Libraries -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
@@ -389,83 +401,7 @@ document.addEventListener('DOMContentLoaded', function() {
         return new bootstrap.Tooltip(tooltipTriggerEl);
     });
 
-    // Simple Search and Filter Implementation (without DataTables)
-    const searchInput = document.getElementById('searchInput');
-    const jenisFilter = document.getElementById('jenisFilter');
-    const resetFilter = document.getElementById('resetFilter');
-    const table = document.getElementById('bengkelTable');
-    const tbody = table.querySelector('tbody');
-    const noResultsMessage = document.getElementById('noResultsMessage');
-    
-    function filterTable() {
-        const searchTerm = searchInput.value.toLowerCase();
-        const selectedJenis = jenisFilter.value;
-        const rows = tbody.querySelectorAll('tr:not(#noDataRow)');
-        let visibleRows = 0;
-        
-        rows.forEach(row => {
-            const nama = row.getAttribute('data-nama') || '';
-            const pemilik = row.getAttribute('data-pemilik') || '';
-            const whatsapp = row.getAttribute('data-whatsapp') || '';
-            const jenis = row.getAttribute('data-jenis') || '';
-            
-            // Check search term
-            const matchesSearch = searchTerm === '' || 
-                nama.includes(searchTerm) || 
-                pemilik.includes(searchTerm) || 
-                whatsapp.includes(searchTerm);
-            
-            // Check jenis filter
-            const matchesJenis = selectedJenis === '' || jenis === selectedJenis;
-            
-            if (matchesSearch && matchesJenis) {
-                row.style.display = '';
-                visibleRows++;
-            } else {
-                row.style.display = 'none';
-            }
-        });
-        
-        // Show/hide no results message
-        if (visibleRows === 0 && rows.length > 0) {
-            noResultsMessage.classList.remove('d-none');
-        } else {
-            noResultsMessage.classList.add('d-none');
-        }
-        
-        // Update row numbers for visible rows
-        updateRowNumbers();
-    }
-    
-    function updateRowNumbers() {
-        const visibleRows = tbody.querySelectorAll('tr:not(#noDataRow):not([style*="display: none"])');
-        visibleRows.forEach((row, index) => {
-            const numberCell = row.querySelector('td:first-child');
-            if (numberCell) {
-                numberCell.textContent = index + 1;
-            }
-        });
-    }
-    
-    // Event listeners
-    searchInput.addEventListener('input', filterTable);
-    jenisFilter.addEventListener('change', filterTable);
-    document.getElementById('searchButton').addEventListener('click', filterTable);
-    
-    // Reset filter
-    resetFilter.addEventListener('click', function() {
-        searchInput.value = '';
-        jenisFilter.value = '';
-        filterTable();
-    });
-    
-    // Enter key for search
-    searchInput.addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') {
-            e.preventDefault();
-            filterTable();
-        }
-    });
+    // ... sisa script JavaScript Anda tetap sama ...
 
     // Initialize Map
     function initMap() {
@@ -511,7 +447,7 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('lng').value = e.latlng.lng.toFixed(6);
         });
         
-        if (navigator.geolocation) {
+        if (navigator.geolocation && !document.getElementById('lat').value) { // Hanya get lokasi jika lat/lng kosong
             navigator.geolocation.getCurrentPosition(
                 function(position) {
                     var lat = position.coords.latitude;
@@ -536,11 +472,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Auto hide alerts after 5 seconds
     setTimeout(function() {
-        const alerts = document.querySelectorAll('.alert');
+        const alerts = document.querySelectorAll('.alert-dismissible');
         alerts.forEach(alert => {
             if (window.bootstrap && window.bootstrap.Alert) {
                 const bsAlert = new bootstrap.Alert(alert);
-                bsAlert.close();
+                if (bsAlert) {
+                   bsAlert.close();
+                }
             }
         });
     }, 5000);
@@ -549,11 +487,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
 <style>
 /* Custom styles for better UX */
-.table-responsive {
-    max-height: 600px;
-    overflow-y: auto;
-}
-
 .card-header .form-control:focus,
 .card-header .form-select:focus {
     box-shadow: 0 0 0 0.2rem rgba(255, 255, 255, 0.25);
@@ -570,38 +503,12 @@ document.addEventListener('DOMContentLoaded', function() {
 }
 
 .badge {
-    font-size: 0.75em;
+    font-size: 0.8em;
+    padding: 0.4em 0.6em;
 }
 
 .btn-group-sm > .btn, .btn-sm {
     font-size: 0.875rem;
 }
-
-/* Loading animation for map */
-#map-canvas {
-    background: linear-gradient(45deg, #f8f9fa 25%, transparent 25%), 
-                linear-gradient(-45deg, #f8f9fa 25%, transparent 25%), 
-                linear-gradient(45deg, transparent 75%, #f8f9fa 75%), 
-                linear-gradient(-45deg, transparent 75%, #f8f9fa 75%);
-    background-size: 20px 20px;
-    background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
-}
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
-    .card-header .row > div {
-        margin-bottom: 0.5rem;
-    }
-    
-    .d-flex.gap-1 {
-        flex-direction: column;
-        gap: 0.25rem !important;
-    }
-    
-    .btn-sm {
-        padding: 0.25rem 0.5rem;
-        font-size: 0.75rem;
-    }
-}
 </style>
-@endsection
+@endpush

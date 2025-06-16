@@ -2,7 +2,6 @@
 
 @section('content')
 <div class="container-fluid">
-    <!-- Header -->
     <div class="row mb-4">
         <div class="col-12">
             <div class="card border-0 bg-primary text-white">
@@ -14,7 +13,6 @@
         </div>
     </div>
 
-    <!-- Alert Messages -->
     @if(session('success'))
     <div class="alert alert-success alert-dismissible fade show">
         <i class="fas fa-check-circle me-2"></i>{{ session('success') }}
@@ -53,7 +51,7 @@
                                     </label>
                                     <select name="id_user" class="form-select @error('id_user') is-invalid @enderror" required>
                                         @foreach($users as $user)
-                                        <option value="{{ $user->id }}" {{ $bengkel->id_user == $user->id ? 'selected' : '' }}>
+                                        <option value="{{ $user->id }}" {{ old('id_user', $bengkel->id_user) == $user->id ? 'selected' : '' }}>
                                             {{ $user->name }} ({{ $user->email }})
                                         </option>
                                         @endforeach
@@ -68,7 +66,7 @@
                                         <i class="fas fa-store me-1 text-primary"></i>Nama Bengkel
                                     </label>
                                     <input type="text" name="nama" class="form-control @error('nama') is-invalid @enderror" 
-                                        value="{{ old('nama', $bengkel->nama) }}" required>
+                                           value="{{ old('nama', $bengkel->nama) }}" required>
                                     @error('nama')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
@@ -79,7 +77,7 @@
                                         <i class="fas fa-phone me-1 text-primary"></i>Nomor WhatsApp
                                     </label>
                                     <input type="tel" name="whatsapp" class="form-control @error('whatsapp') is-invalid @enderror" 
-                                        value="{{ old('whatsapp', $bengkel->whatsapp) }}" required>
+                                           value="{{ old('whatsapp', $bengkel->whatsapp) }}" required>
                                     @error('whatsapp')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
@@ -90,8 +88,8 @@
                                         <i class="fas fa-tools me-1 text-primary"></i>Jenis Bengkel
                                     </label>
                                     <select name="jenis_bengkel" class="form-select @error('jenis_bengkel') is-invalid @enderror" required>
-                                        <option value="service" {{ $bengkel->jenis_bengkel == 'service' ? 'selected' : '' }}>Service</option>
-                                        <option value="tambal_ban" {{ $bengkel->jenis_bengkel == 'tambal_ban' ? 'selected' : '' }}>Tambal Ban</option>
+                                        <option value="service" {{ old('jenis_bengkel', $bengkel->jenis_bengkel) == 'service' ? 'selected' : '' }}>Service</option>
+                                        <option value="tambal_ban" {{ old('jenis_bengkel', $bengkel->jenis_bengkel) == 'tambal_ban' ? 'selected' : '' }}>Tambal Ban</option>
                                     </select>
                                     @error('jenis_bengkel')
                                         <div class="invalid-feedback">{{ $message }}</div>
@@ -131,7 +129,7 @@
                                         <i class="fas fa-map-marker-alt me-1 text-primary"></i>Alamat
                                     </label>
                                     <textarea name="alamat" class="form-control @error('alamat') is-invalid @enderror" 
-                                        rows="3" required>{{ old('alamat', $bengkel->alamat) }}</textarea>
+                                              rows="3" required>{{ old('alamat', $bengkel->alamat) }}</textarea>
                                     @error('alamat')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
@@ -143,12 +141,12 @@
                                     </label>
                                     <div class="form-check">
                                         <input class="form-check-input" type="radio" name="jasa_penjemputan" id="jasa_ada" 
-                                            value="ada" {{ $bengkel->jasa_penjemputan == 'ada' ? 'checked' : '' }}>
+                                               value="ada" {{ old('jasa_penjemputan', $bengkel->jasa_penjemputan) == 'ada' ? 'checked' : '' }}>
                                         <label class="form-check-label" for="jasa_ada">Ada</label>
                                     </div>
                                     <div class="form-check">
                                         <input class="form-check-input" type="radio" name="jasa_penjemputan" id="jasa_tidak" 
-                                            value="tidak" {{ $bengkel->jasa_penjemputan == 'tidak' ? 'checked' : '' }}>
+                                               value="tidak" {{ old('jasa_penjemputan', $bengkel->jasa_penjemputan) == 'tidak' ? 'checked' : '' }}>
                                         <label class="form-check-label" for="jasa_tidak">Tidak Ada</label>
                                     </div>
                                     @error('jasa_penjemputan')
@@ -162,7 +160,7 @@
                                             <i class="fas fa-clock me-1 text-primary"></i>Jam Buka
                                         </label>
                                         <input type="time" name="jam_buka" class="form-control @error('jam_buka') is-invalid @enderror" 
-                                            value="{{ old('jam_buka', $bengkel->jam_buka) }}" required>
+                                               value="{{ old('jam_buka', $bengkel->jam_buka) }}" required>
                                         @error('jam_buka')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
@@ -172,7 +170,7 @@
                                             <i class="fas fa-clock me-1 text-primary"></i>Jam Tutup
                                         </label>
                                         <input type="time" name="jam_tutup" class="form-control @error('jam_tutup') is-invalid @enderror" 
-                                            value="{{ old('jam_tutup', $bengkel->jam_tutup) }}" required>
+                                               value="{{ old('jam_tutup', $bengkel->jam_tutup) }}" required>
                                         @error('jam_tutup')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
@@ -186,13 +184,18 @@
                                     <div class="d-flex flex-wrap gap-2">
                                         @php
                                             $hari = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'];
-                                            $hariLibur = old('hari_libur', $bengkel->hari_libur ? explode(',', $bengkel->hari_libur) : []);
                                         @endphp
                                         @foreach($hari as $day)
                                         <div class="form-check">
                                             <input class="form-check-input" type="checkbox" name="hari_libur[]" 
-                                                id="hari_{{ $day }}" value="{{ $day }}" 
-                                                {{ in_array($day, $hariLibur) ? 'checked' : '' }}>
+                                                   id="hari_{{ $day }}" value="{{ $day }}"
+                                                   {{-- 
+                                                      Logika yang benar:
+                                                      1. Cek dulu apakah ada 'old' input untuk 'hari_libur'. Ini terjadi jika validasi gagal.
+                                                      2. Jika tidak ada, gunakan variabel $hariLibur yang dikirim dari controller.
+                                                      Fungsi old() sudah menangani ini secara otomatis.
+                                                   --}}
+                                                   {{ in_array($day, old('hari_libur', $hariLibur)) ? 'checked' : '' }}>
                                             <label class="form-check-label" for="hari_{{ $day }}">{{ $day }}</label>
                                         </div>
                                         @endforeach
@@ -217,7 +220,7 @@
                                     <i class="fas fa-latitude me-1 text-primary"></i>Latitude
                                 </label>
                                 <input type="text" name="latitude" id="lat" class="form-control @error('latitude') is-invalid @enderror" 
-                                    value="{{ old('latitude', $bengkel->latitude) }}" required>
+                                       value="{{ old('latitude', $bengkel->latitude) }}" required>
                                 @error('latitude')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
@@ -227,7 +230,7 @@
                                     <i class="fas fa-longitude me-1 text-primary"></i>Longitude
                                 </label>
                                 <input type="text" name="longitude" id="lng" class="form-control @error('longitude') is-invalid @enderror" 
-                                    value="{{ old('longitude', $bengkel->longitude) }}" required>
+                                       value="{{ old('longitude', $bengkel->longitude) }}" required>
                                 @error('longitude')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
@@ -249,10 +252,8 @@
     </div>
 </div>
 
-<!-- CSS Leaflet -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
-<!-- JavaScript Libraries -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -261,10 +262,8 @@
 document.addEventListener('DOMContentLoaded', function() {
     // Initialize Map for Edit Form
     function initMap() {
-        // Check if map container exists
         if (!document.getElementById('map-canvas')) return;
 
-        // Use existing coordinates
         var lat = parseFloat(document.getElementById('lat').value) || -3.320611;
         var lng = parseFloat(document.getElementById('lng').value) || 114.591866;
         
