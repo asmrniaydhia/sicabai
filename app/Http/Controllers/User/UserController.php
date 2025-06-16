@@ -72,7 +72,8 @@ class UserController extends Controller
      */
     public function show(string $id)
     {
-        $bengkel = Bengkel::with('ratings.user')->findOrFail($id);
+        $bengkel = Bengkel::with('ratings')->findOrFail($id);
+
         return view('user.detail', compact('bengkel'));
     }
 
