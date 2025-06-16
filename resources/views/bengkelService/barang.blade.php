@@ -1,4 +1,5 @@
 @extends('layouts.app')
+
 @section('content')
 <div class="container mt-4">
     <div class="row justify-content-center">
@@ -8,23 +9,38 @@
                     <h4 class="mb-0">Tambah Barang Bengkel</h4>
                 </div>
                 <div class="card-body">
-                    <form action="{{ route('bengkelService.barang.store') }}" method="POST">
+                    @if ($errors->any())
+                        <div class="alert alert-danger">
+                            <ul>
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
+
+                    @if (session('success'))
+                        <div class="alert alert-success">
+                            {{ session('success') }}
+                        </div>
+                    @endif
+
+                    <form action="{{ route('barang.store') }}" method="POST">
                         @csrf
                         
                         <!-- Jenis Barang (Dropdown dari tabel spareparts) -->
                         <div class="mb-3">
-                            <label for="jenis_barang" class="form-label">Jenis Barang <span class="text-danger">*</span></label>
-                            <select class="form-select @error('jenis_barang') is-invalid @enderror" 
-                                    id="jenis_barang" 
-                                    name="jenis_barang" 
+                            <label for="sparepart_id" class="form-label">Jenis Sparepart <span class="text-danger">*</span></label>
+                            <select class="form-select @error('sparepart_id') is-invalid @enderror" 
+                                    id="sparepart_id" 
+                                    name="sparepart_id" 
                                     required>
-                                <option value="">-- Pilih Jenis Barang --</option>
-
+                                <option value="">-- Pilih Jenis Sparepart --</option>
                                 @foreach ($spareparts as $sparepart)
                                     <option value="{{ $sparepart->id }}">{{ $sparepart->nama_sparepart }}</option>
                                 @endforeach
                             </select>
-                            @error('jenis_barang')
+                            @error('sparepart_id')
                                 <div class="invalid-feedback">
                                     {{ $message }}
                                 </div>
@@ -72,16 +88,16 @@
 
                         <!-- Stok Barang -->
                         <div class="mb-3">
-                            <label for="stok_barang" class="form-label">Stok Barang <span class="text-danger">*</span></label>
+                            <label for="stok" class="form-label">Stok Barang <span class="text-danger">*</span></label>
                             <input type="number" 
-                                   class="form-control @error('stok_barang') is-invalid @enderror" 
-                                   id="stok_barang" 
+                                   class="form-control @error('stok') is-invalid @enderror" 
+                                   id="stok" 
                                    name="stok" 
-                                   value="{{ old('stok_barang') }}"
+                                   value="{{ old('stok') }}"
                                    placeholder="0"
                                    min="0"
                                    required>
-                            @error('stok_barang')
+                            @error('stok')
                                 <div class="invalid-feedback">
                                     {{ $message }}
                                 </div>
@@ -90,7 +106,7 @@
 
                         <!-- Tombol Submit -->
                         <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                            <a href="{{ route('bengkelService.barang.store') }}" class="btn btn-secondary me-md-2">
+                            <a href="{{ route('bengkelService.dashboard') }}" class="btn btn-secondary me-md-2">
                                 <i class="fas fa-arrow-left"></i> Kembali
                             </a>
                             <button type="submit" class="btn btn-primary">
@@ -117,7 +133,7 @@
                                 <thead class="table-dark">
                                     <tr>
                                         <th>No</th>
-                                        <th>Jenis Barang</th>
+                                        <th>Jenis Sparepart</th>
                                         <th>Merk</th>
                                         <th>Harga Jual</th>
                                         <th>Stok</th>

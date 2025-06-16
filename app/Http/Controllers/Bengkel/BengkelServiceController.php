@@ -23,28 +23,41 @@ class BengkelServiceController extends Controller
         // $spareparts = Sparepart::all(); // untuk dropdown
         // $barangs = Barang::all();       // untuk menampilkan daftar barang
         
-        $barangs = Barang::with('sparepart')->get();
-        $spareparts = Sparepart::all();
-        return view('bengkelService.barang', compact('barangs', 'spareparts'));
+
+        // $barangs = Barang::with('sparepart')->get();
+        // $spareparts = Sparepart::all();
+        // return view('bengkelService.barang', compact('barangs', 'spareparts'));
     }
 
     public function store(Request $request)
     {
+        // Validasi data
         $validated = $request->validate([
-            'jenis_barang' => 'required|exists:spareparts,id',
+            'sparepart_id' => 'required|exists:spareparts,id', // Ganti 'jenis_barang' menjadi 'sparepart_id' untuk konsistensi
             'merk' => 'required|string|max:100',
             'harga_jual' => 'required|numeric',
             'stok' => 'required|integer',
+            'id_bengkel' => 'required|exists:bengkel,id', // Validasi id_bengkel
         ]);
 
+        // Ambil id_bengkel berdasarkan user yang login (opsional)
+        $user = Auth::user();
+        $bengkel = Bengkel::where('id_user', $user->id)->first();
+
+        if (!$bengkel) {
+            return redirect()->back()->with('error', 'Anda tidak memiliki bengkel yang terkait.');
+        }
+
+        // Simpan data barang
         Barang::create([
-            'sparepart_id' => $validated['jenis_barang'],
+            'sparepart_id' => $validated['sparepart_id'],
+            'id_bengkel' => $bengkel->id, // Gunakan id_bengkel dari bengkel user
             'merk' => $validated['merk'],
             'harga_jual' => $validated['harga_jual'],
             'stok' => $validated['stok'],
         ]);
 
-        return redirect()->route('bengkelService.barang')->with('success', 'Barang berhasil disimpan!');
+        return redirect()->back()->with('success', 'Barang berhasil ditambahkan.');
     }
 
 
@@ -62,7 +75,6 @@ class BengkelServiceController extends Controller
             'foto_bengkel' => 'image|mimes:jpeg,png,jpg|max:2048',
             'alamat' => 'required|string',
             'jasa_penjemputan' => 'required|in:ada,tidak',
-            // Perbaikan: Validasi hanya jika field ada dan tidak kosong
             'jam_buka' => 'required|date_format:H:i',
             'jam_tutup' => 'required|date_format:H:i' . ($request->filled('jam_buka') ? '|after:jam_buka' : ''),
             'hari_libur' => 'required|array',
@@ -100,18 +112,18 @@ class BengkelServiceController extends Controller
         return response()->json(['message' => 'Bengkel berhasil diperbarui!'], 200);
     }
 
-    public function edit($id)
-    {
-        $barang = Barang::findOrFail($id);
-        $spareparts = Sparepart::all();
-        return view('bengkelService.edit_barang', compact('barang', 'spareparts'));
-    }
+    // public function edit($id)
+    // {
+    //     $barang = Barang::findOrFail($id);
+    //     $spareparts = Sparepart::all();
+    //     return view('bengkelService.edit_barang', compact('barang', 'spareparts'));
+    // }
 
-    public function destroy($id)
-    {
-        Barang::destroy($id);
-        return back()->with('success', 'Barang berhasil dihapus.');
-    }
+    // public function destroy($id)
+    // {
+    //     Barang::destroy($id);
+    //     return back()->with('success', 'Barang berhasil dihapus.');
+    // }
 
 
 

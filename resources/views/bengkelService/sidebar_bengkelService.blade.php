@@ -6,9 +6,8 @@
         <div class="sidebar-brand-text mx-2">MotoBengkel</div>
     </a>
 
-
-
     <hr class="sidebar-divider my-0">
+
     <li class="nav-item {{ (request()->is('bengkelService/dashboard') || request()->is('dashboard')) ? 'active' : '' }}">
         <a class="nav-link" href="{{ Auth::user()->usertype == 'bengkel' ? route('bengkelService.dashboard') : route('dashboard') }}">
             <i class="fas fa-fw fa-tachometer-alt"></i>
@@ -16,39 +15,15 @@
         </a>
     </li>
 
-    <!-- Divider -->
     <hr class="sidebar-divider">
 
-    <!-- Heading -->
     <div class="sidebar-heading">
         Interface
     </div>
 
-    <!-- Nav Item - Pages Collapse Menu -->
-    {{-- <li class="nav-item">
-        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo"
-            aria-expanded="true" aria-controls="collapseTwo">
-            <i class="fas fa-fw fa-cog"></i>
-            <span>Spare</span>
-        </a>
-        <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
-            <div class="bg-white py-2 collapse-inner rounded">
-                <h6 class="collapse-header">Custom Components:</h6>
-                <a class="collapse-item" href="buttons.html">Buttons</a>
-                <a class="collapse-item" href="cards.html">Cards</a>
-            </div>
-        </div>
-    </li> --}}
-
-    {{-- <li class="nav-item {{ (request()->is('bengkelService/barang') || request()->is('barang')) ? 'active' : '' }}">
-        <a class="nav-link" href="{{ Auth::user()->usertype == 'bengkel' ? route('bengkelService.barang') : route('barang') }}">
-            <i class="fas fa-fw fa-wrench"></i>
-            <span>Daftar Barang</span></a>
-    </li> --}}
-
-    <li class="nav-item {{ request()->is('bengkelService/barang') ? 'active' : '' }}">
-        <a class="nav-link" href="{{ Auth::user()->usertype == 'bengkel' ? route('bengkelService.barang') : route('barang') }}">
-            <i class="fas fa-fw fa-tachometer-alt"></i>
+    <li class="nav-item {{ request()->is('barang/create') || request()->is('barang/create*') ? 'active' : '' }}">
+        <a class="nav-link" href="{{ Auth::user()->usertype == 'bengkel' ? route('barang.create') : route('barang') }}">
+            <i class="fas fa-fw fa-wrench"></i> <!-- Ganti ikon yang lebih relevan -->
             <span>Daftar Barang</span>
         </a>
     </li>

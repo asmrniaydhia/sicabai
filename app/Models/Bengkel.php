@@ -30,4 +30,6 @@ class Bengkel extends Model
     {
         return $this->hasMany(Rating::class, 'id_bengkel');
     }
+    
+    
 }

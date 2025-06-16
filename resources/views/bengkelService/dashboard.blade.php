@@ -3,11 +3,6 @@
 @section('content')
 <!-- Begin Page Content -->
 <div class="container-fluid">
-    <!-- Page Heading -->
-    {{-- <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <h1 class="h3 mb-0 text-gray-800">Beranda Bengkel Service</h1>
-    </div> --}}
-
     <div class="row">
         @if ($bengkel)
             <div class="col-xl-12 col-lg-12">
@@ -16,7 +11,8 @@
                         <h6 class="m-0 font-weight-bold text-primary">Informasi Bengkel</h6>
                     </div>
                     <div class="card-body p-5">
-                        <form id="bengkelForm" class="user" method="POST" action="{{ $bengkel->jenis_bengkel === 'service' ? route('bengkelService.update', $bengkel->id) : route('tambalBan.update', $bengkel->id) }}" enctype="multipart/form-data">                            @csrf
+                        <form id="bengkelForm" class="user" method="POST" action="{{ $bengkel->jenis_bengkel === 'service' ? route('bengkelService.update', $bengkel->id) : route('tambalBan.update', $bengkel->id) }}" enctype="multipart/form-data">
+                            @csrf
                             @method('PUT')
                             <div class="row">
                                 <!-- Left Column: Photo and Basic Info -->
@@ -77,7 +73,8 @@
                                                 <input type="time" class="form-control rounded-pill" name="jam_buka" id="jam_buka" value="{{ substr($bengkel->jam_buka, 0, 5) }}" readonly>
                                             </div>
                                             <div class="col-sm-6">
-                                                <input type="time" class="form-control rounded-pill" name="jam_tutup" id="jam_tutup" value="{{ substr($bengkel->jam_tutup, 0, 5) }}" readonly>                                            </div>
+                                                <input type="time" class="form-control rounded-pill" name="jam_tutup" id="jam_tutup" value="{{ substr($bengkel->jam_tutup, 0, 5) }}" readonly>
+                                            </div>
                                         </div>
                                     </div>
                                     <div class="mb-4">
@@ -109,12 +106,18 @@
                                     </div>
                                 </div>
                             </div>
-                            <button type="button" id="editButton" class="btn btn-lg btn-primary rounded-pill btn-block w-100" style="background-color: #F97316; border: none;">
-                                Ubah
-                            </button>
-                            <button type="submit" id="saveButton" class="btn btn-lg btn-success rounded-pill btn-block w-100 d-none" style="border: none;">
-                                Simpan
-                            </button>
+                            <!-- Tombol Actions -->
+                            <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                                <button type="button" id="editButton" class="btn btn-lg btn-primary rounded-pill" style="background-color: #F97316; border: none;">
+                                    Ubah
+                                </button>
+                                <button type="button" id="cancelButton" class="btn btn-lg btn-secondary rounded-pill d-none" style="border: none;">
+                                    Batal
+                                </button>
+                                <button type="submit" id="saveButton" class="btn btn-lg btn-success rounded-pill d-none" style="border: none;">
+                                    Simpan
+                                </button>
+                            </div>
                         </form>
                     </div>
                 </div>
@@ -143,20 +146,62 @@
             draggable: false // Initially not draggable
         }).addTo(map);
 
+        // Store initial form values for reset
+        var initialValues = {
+            nama: $('input[name="nama"]').val(),
+            whatsapp: $('input[name="whatsapp"]').val(),
+            alamat: $('textarea[name="alamat"]').val(),
+            jasa_penjemputan: $('input[name="jasa_penjemputan"]:checked').val(),
+            jam_buka: $('#jam_buka').val(),
+            jam_tutup: $('#jam_tutup').val(),
+            hari_libur: $('input[name="hari_libur[]"]:checked').map(function() { return this.value; }).get(),
+            lat: $('#lat').val(),
+            lng: $('#lng').val()
+        };
+
         // Toggle edit mode
         $('#editButton').on('click', function() {
             // Enable all form fields, including lat and lng
-            $('#bengkelForm input, #bengkelForm textarea').prop('readonly', false).prop('disabled', false);
-            $('#bengkelForm input[type="file"]').prop('disabled', false);
+            $('#bengkelForm input, #bengkelForm textarea, #bengkelForm input[type="file"]').prop('readonly', false).prop('disabled', false);
 
             // Make marker draggable
             marker.setLatLng([parseFloat($('#lat').val()), parseFloat($('#lng').val())]);
             marker.options.draggable = true;
             marker.dragging.enable();
 
-            // Show save button, hide edit button
+            // Show save and cancel buttons, hide edit button
             $('#saveButton').removeClass('d-none');
+            $('#cancelButton').removeClass('d-none');
             $('#editButton').addClass('d-none');
+        });
+
+        // Cancel/Reset button functionality
+        $('#cancelButton').on('click', function() {
+            // Reset form fields to initial values
+            $('input[name="nama"]').val(initialValues.nama);
+            $('input[name="whatsapp"]').val(initialValues.whatsapp);
+            $('textarea[name="alamat"]').val(initialValues.alamat);
+            $('input[name="jasa_penjemputan"][value="' + initialValues.jasa_penjemputan + '"]').prop('checked', true);
+            $('#jam_buka').val(initialValues.jam_buka);
+            $('#jam_tutup').val(initialValues.jam_tutup);
+            $('input[name="hari_libur[]"]').prop('checked', false);
+            $.each(initialValues.hari_libur, function(index, value) {
+                $('input[name="hari_libur[]"][value="' + value + '"]').prop('checked', true);
+            });
+            $('#lat').val(initialValues.lat);
+            $('#lng').val(initialValues.lng);
+
+            // Reset marker position
+            marker.setLatLng([parseFloat(initialValues.lat), parseFloat(initialValues.lng)]);
+            map.setView([parseFloat(initialValues.lat), parseFloat(initialValues.lng)], 15);
+
+            // Disable all form fields and hide save/cancel buttons
+            $('#bengkelForm input, #bengkelForm textarea, #bengkelForm input[type="file"]').prop('readonly', true).prop('disabled', true);
+            marker.options.draggable = false;
+            marker.dragging.disable();
+            $('#saveButton').addClass('d-none');
+            $('#cancelButton').addClass('d-none');
+            $('#editButton').removeClass('d-none');
         });
 
         // Update lat/lng inputs when marker is dragged
@@ -194,13 +239,11 @@
         $('#bengkelForm').on('submit', function(e) {
             e.preventDefault();
 
-            // Ambil nilai jam_buka dan jam_tutup dari input
             var jamBuka = $('#jam_buka').val();
             var jamTutup = $('#jam_tutup').val();
 
-            // Normalisasi format ke H:i
             if (jamBuka) {
-                jamBuka = jamBuka.substring(0, 5); // Ambil HH:MM
+                jamBuka = jamBuka.substring(0, 5);
                 $('#jam_buka').val(jamBuka);
             } else {
                 jamBuka = '{{ $bengkel->jam_buka }}'.substring(0, 5);
@@ -208,7 +251,7 @@
             }
 
             if (jamTutup) {
-                jamTutup = jamTutup.substring(0, 5); // Ambil HH:MM
+                jamTutup = jamTutup.substring(0, 5);
                 $('#jam_tutup').val(jamTutup);
             } else {
                 jamTutup = '{{ $bengkel->jam_tutup }}'.substring(0, 5);

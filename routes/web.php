@@ -1,12 +1,13 @@
 <?php
 
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\BarangController;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\User\UserController;
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Bengkel\BengkelController;
 use App\Http\Controllers\Bengkel\BengkelServiceController;
 use App\Http\Controllers\Bengkel\BengkelTambalBanController;
-use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\User\UserController;
-use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('welcome');
@@ -51,11 +52,13 @@ Route::middleware(['auth', 'bengkelMiddleware'])->group(function () {
 // Group untuk Bengkel Service
 Route::middleware(['auth', 'bengkelService'])->group(function () {
     Route::get('/bengkelService/dashboard', [BengkelServiceController::class, 'index'])->name('bengkelService.dashboard');
-    Route::get('/bengkelService/barang', [BengkelServiceController::class, 'barang'])->name('bengkelService.barang');
-    Route::post('/bengkelService/barang', [BengkelServiceController::class, 'store'])->name('bengkelService.barang.store');
     Route::put('/bengkelService/{id}', [BengkelServiceController::class, 'update'])->name('bengkelService.update');
-    Route::get('/bengkelService/barang/{id}/edit', [BengkelServiceController::class, 'edit'])->name('barang.edit');
-    Route::delete('/bengkelService/barang/{id}', [BengkelServiceController::class, 'destroy'])->name('barang.destroy');
+
+    Route::get('/barang/create', [BarangController::class, 'create'])->name('barang.create');
+    Route::post('/barang/store', [BarangController::class, 'store'])->name('barang.store');
+    Route::get('/barang/{id}/edit', [BarangController::class, 'edit'])->name('barang.edit');
+    Route::put('/barang/{id}', [BarangController::class, 'update'])->name('barang.update');
+    Route::delete('/barang/{id}', [BarangController::class, 'destroy'])->name('barang.destroy');
 });
 
 // Group untuk Tambal Ban

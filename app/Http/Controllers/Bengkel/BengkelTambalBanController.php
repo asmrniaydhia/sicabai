@@ -19,7 +19,7 @@ class BengkelTambalBanController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function updateInfo(Request $request, string $id)
     {
         $bengkelTambalBan = Bengkel::where('id', $id)->where('id_user', Auth::id())->firstOrFail();
 
