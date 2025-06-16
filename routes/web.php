@@ -19,7 +19,6 @@ Route::middleware(['auth'])->group(function () {
     })->name('dashboard');
 });
 
-
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -28,47 +27,43 @@ Route::middleware('auth')->group(function () {
 
 require __DIR__.'/auth.php';
 
-Route::middleware(['auth', 'userMiddleware'])->group(function(){
+Route::middleware(['auth', 'userMiddleware'])->group(function () {
     Route::get('/user/dashboard', [UserController::class, 'index'])->name('user.dashboard');
 });
 
 // Admin routes with proper naming
 Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
-    
-    // Middleware check langsung dalam closure
     Route::group(['middleware' => function ($request, $next) {
         if (auth()->user()->usertype !== 'admin') {
             abort(403, 'Akses ditolak');
         }
         return $next($request);
     }], function () {
-        
         // Dashboard
         Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard');
-        
+
         // Users - Complete CRUD routes
         Route::get('/user', [AdminController::class, 'user'])->name('user');
         Route::post('/user', [AdminController::class, 'storeUser'])->name('user.store');
         Route::get('/user/{id}/edit', [AdminController::class, 'editUser'])->name('user.edit');
         Route::put('/user/{id}', [AdminController::class, 'updateUser'])->name('user.update');
         Route::delete('/user/{id}', [AdminController::class, 'destroyUser'])->name('user.destroy');
-        Route::get('/user/create', [AdminController::class, 'createUser'])->name('user.create');
-        Route::get('/user/{id}', [AdminController::class, 'showUser'])->name('user.show');
-        
+        // Route::get('/user/create', [AdminController::class, 'createUser'])->name('user.create'); // Uncomment if needed
+        // Route::get('/user/{id}', [AdminController::class, 'showUser'])->name('user.show'); // Uncomment if needed
+
         // Sparepart
         Route::get('/sparepart', [AdminController::class, 'sparepart'])->name('sparepart');
         Route::post('/sparepart', [AdminController::class, 'storeSparepart'])->name('sparepart.store');
         Route::get('/sparepart/{id}/edit', [AdminController::class, 'editSparepart'])->name('sparepart.edit');
         Route::put('/sparepart/{id}', [AdminController::class, 'updateSparepart'])->name('sparepart.update');
         Route::delete('/sparepart/{id}', [AdminController::class, 'destroySparepart'])->name('sparepart.destroy');
-        
+
         // Bengkel
-        Route::get('/bengkel', [AdminController::class, 'bengkel'])->name('bengkel');
+        Route::get('/bengkel', [AdminController::class, 'bengkel'])->name('bengkel'); // Ensure this is defined
         Route::post('/bengkel', [AdminController::class, 'storeBengkel'])->name('bengkel.store');
         Route::get('/bengkel/{id}/edit', [AdminController::class, 'editBengkel'])->name('bengkel.edit');
         Route::put('/bengkel/{id}', [AdminController::class, 'updateBengkel'])->name('bengkel.update');
         Route::delete('/bengkel/{id}', [AdminController::class, 'destroyBengkel'])->name('bengkel.destroy');
-        
     });
 });
 
@@ -80,7 +75,6 @@ Route::middleware(['auth'])->group(function () {
         }
         return $next($request);
     }], function () {
-        // Routes for blade template compatibility
         Route::get('/user/{id}/edit', [AdminController::class, 'editUser'])->name('user.edit');
         Route::put('/user/{id}', [AdminController::class, 'updateUser'])->name('user.update');
         Route::delete('/user/{id}', [AdminController::class, 'destroyUser'])->name('user.destroy');
@@ -93,7 +87,6 @@ Route::middleware(['auth', 'bengkelMiddleware'])->group(function () {
     Route::post('/bengkel/input-toko', [BengkelController::class, 'store'])->name('bengkel.input-toko.store');
 });
 
-// Group untuk Bengkel Service
 Route::middleware(['auth', 'bengkelService'])->group(function () {
     Route::get('/bengkelService/dashboard', [BengkelServiceController::class, 'index'])->name('bengkelService.dashboard');
     Route::put('/bengkelService/{id}', [BengkelServiceController::class, 'update'])->name('bengkelService.update');
@@ -105,7 +98,6 @@ Route::middleware(['auth', 'bengkelService'])->group(function () {
     Route::delete('/barang/{id}', [BarangController::class, 'destroy'])->name('barang.destroy');
 });
 
-// Group untuk Tambal Ban
 Route::middleware(['auth', 'tambalBan'])->group(function () {
     Route::get('/tambalBan/dashboard', [BengkelTambalBanController::class, 'index'])->name('tambalBan.dashboard');
     Route::get('/tambalBan/jasa', [BengkelTambalBanController::class, 'jasa'])->name('tambalBan.jasa');

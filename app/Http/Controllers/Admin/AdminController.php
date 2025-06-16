@@ -449,42 +449,55 @@ class AdminController extends Controller
      */
     public function editBengkel($id)
     {
-        try {
-            $bengkel = Bengkel::findOrFail($id);
-            $users = User::where('usertype', 'user')->get();
-            $hariLibur = $bengkel->hari_libur ? explode(',', $bengkel->hari_libur) : [];
-            
-            return view('admin.edit_bengkel', compact('bengkel', 'users', 'hariLibur'));
-        } catch (\Exception $e) {
-            Log::error('Error edit bengkel: ' . $e->getMessage());
-            return redirect()->route('admin.bengkel')->with('error', 'Bengkel tidak ditemukan');
-        }
+    try {
+        $bengkel = Bengkel::findOrFail($id);
+        $users = User::where('usertype', 'user')->get();
+        $hariLibur = $bengkel->hari_libur ? explode(',', $bengkel->hari_libur) : [];
+        
+        return view('admin.edit_bengkel', compact('bengkel', 'users', 'hariLibur'));
+    } catch (\Exception $e) {
+        Log::error('Error edit bengkel: ' . $e->getMessage());
+        return redirect()->route('admin.bengkel.index')->with('error', 'Bengkel tidak ditemukan');
     }
-
-    /**
-     * Mengupdate data bengkel
-     */
+    }
     public function updateBengkel(Request $request, $id)
     {
+        // Validasi input
         $request->validate([
             'id_user' => 'required|exists:users,id',
             'nama' => 'required|string|max:255',
             'whatsapp' => 'required|string|max:15',
             'jenis_bengkel' => 'required|in:service,tambal_ban',
             'foto_bengkel' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'hapus_foto' => 'nullable|boolean', // Tambahkan validasi untuk hapus_foto
             'alamat' => 'required|string',
             'jasa_penjemputan' => 'required|in:ada,tidak',
             'jam_buka' => 'required|date_format:H:i',
             'jam_tutup' => 'required|date_format:H:i|after:jam_buka',
             'hari_libur' => 'nullable|array',
-            'hari_libur.*' => 'string',
+            'hari_libur.*' => 'string|in:Senin,Selasa,Rabu,Kamis,Jumat,Sabtu,Minggu',
             'latitude' => 'required|numeric',
             'longitude' => 'required|numeric',
+        ], [
+            'id_user.required' => 'Pemilik bengkel harus dipilih.',
+            'nama.required' => 'Nama bengkel harus diisi.',
+            'whatsapp.required' => 'Nomor WhatsApp harus diisi.',
+            'jenis_bengkel.required' => 'Jenis bengkel harus dipilih.',
+            'foto_bengkel.image' => 'File harus berupa gambar (jpeg, png, jpg).',
+            'foto_bengkel.max' => 'Ukuran gambar maksimal 2MB.',
+            'alamat.required' => 'Alamat harus diisi.',
+            'jasa_penjemputan.required' => 'Jasa penjemputan harus dipilih.',
+            'jam_buka.required' => 'Jam buka harus diisi.',
+            'jam_tutup.required' => 'Jam tutup harus diisi.',
+            'jam_tutup.after' => 'Jam tutup harus setelah jam buka.',
+            'latitude.required' => 'Latitude harus diisi.',
+            'longitude.required' => 'Longitude harus diisi.',
         ]);
 
         try {
             $bengkel = Bengkel::findOrFail($id);
-            
+
+            // Siapkan data untuk update
             $data = [
                 'id_user' => $request->id_user,
                 'nama' => $request->nama,
@@ -499,24 +512,31 @@ class AdminController extends Controller
                 'longitude' => $request->longitude,
             ];
 
-            // Update foto jika ada
-            if ($request->hasFile('foto_bengkel')) {
-                // Hapus foto lama
-                if ($bengkel->foto_bengkel) {
+            // Penanganan foto bengkel
+            if ($request->has('hapus_foto') && $request->hapus_foto == '1') {
+                // Hapus foto lama jika ada
+                if ($bengkel->foto_bengkel && Storage::disk('public')->exists($bengkel->foto_bengkel)) {
+                    Storage::disk('public')->delete($bengkel->foto_bengkel);
+                }
+                $data['foto_bengkel'] = null; // Set foto menjadi null
+            } elseif ($request->hasFile('foto_bengkel')) {
+                // Hapus foto lama jika ada
+                if ($bengkel->foto_bengkel && Storage::disk('public')->exists($bengkel->foto_bengkel)) {
                     Storage::disk('public')->delete($bengkel->foto_bengkel);
                 }
                 // Simpan foto baru
                 $data['foto_bengkel'] = $request->file('foto_bengkel')->store('bengkel_images', 'public');
             }
 
+            // Update data bengkel
             $bengkel->update($data);
 
             return redirect()->route('admin.bengkel')->with('success', 'Data bengkel berhasil diperbarui!');
         } catch (\Exception $e) {
             Log::error('Error update bengkel: ' . $e->getMessage());
-            return redirect()->back()->withInput()->with('error', 'Gagal memperbarui data bengkel');
+            return redirect()->back()->withInput()->with('error', 'Gagal memperbarui data bengkel: ' . $e->getMessage());
         }
-    }
+    }                                                                                                                                                                                                                                                                                                                                                            
 
     /**
      * Menghapus bengkel
@@ -539,6 +559,11 @@ class AdminController extends Controller
             return redirect()->back()->with('error', 'Gagal menghapus bengkel');
         }
     }
+
+    
+    
+
+    
     // ==================== API ENDPOINTS FOR DASHBOARD ====================
 
     /**
