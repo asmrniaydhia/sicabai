@@ -227,7 +227,7 @@ class AdminController extends Controller
     }
 
     /**
-     * Store new user
+     * Store new user aww awww 
      */
     public function storeUser(Request $request)
     {
