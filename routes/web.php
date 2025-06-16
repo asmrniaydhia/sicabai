@@ -1,7 +1,9 @@
 <?php
 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\BarangController;
+use App\Http\Controllers\RatingController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\User\UserController;
 use App\Http\Controllers\Admin\AdminController;
@@ -30,12 +32,15 @@ require __DIR__.'/auth.php';
 Route::middleware(['auth', 'userMiddleware'])->group(function () {
     Route::get('/user/dashboard', [UserController::class, 'index'])->name('user.dashboard');
     Route::get('/bengkel/{id}/detail', [UserController::class, 'show'])->name('user.detail');
+    Route::post('/ratings', [RatingController::class, 'store'])->name('ratings.store');
+
+
 });
 
 // Admin routes with proper naming
 Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
     Route::group(['middleware' => function ($request, $next) {
-        if (auth()->user()->usertype !== 'admin') {
+        if (Auth::user()->usertype !== 'admin') {
             abort(403, 'Akses ditolak');
         }
         return $next($request);
@@ -71,7 +76,7 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
 // Additional user routes (outside admin prefix) for compatibility
 Route::middleware(['auth'])->group(function () {
     Route::group(['middleware' => function ($request, $next) {
-        if (auth()->user()->usertype !== 'admin') {
+        if (Auth::user()->usertype !== 'admin') {
             abort(403, 'Akses ditolak');
         }
         return $next($request);

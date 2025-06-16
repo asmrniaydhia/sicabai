@@ -8,125 +8,242 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>SB Admin 2 - Register</title>
+    <title>MotoBengkel - Register</title>
 
-    <!-- Custom fonts for this template-->
-    <link href="{{ asset('sbadmin2/vendor/fontawesome-free/css/all.min.css') }}" rel="stylesheet" type="text/css">
-    <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
+    <!-- Custom fonts -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet" type="text/css">
+    <link rel="preconnect" href="https://fonts.bunny.net">
+    <link href="https://fonts.bunny.net/css?family=instrument-sans:200,300,400,500,600,700,800,900" rel="stylesheet" />
 
-    <!-- Custom styles for this template-->
-    <link href="{{ asset('sbadmin2/css/sb-admin-2.min.css') }}" rel="stylesheet">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
     <style>
+        body {
+            font-family: 'Instrument Sans', sans-serif;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 50%, #dee2e6 100%);
+            min-height: 100vh;
+        }
+
+        .register-card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+            background: white;
+        }
+
+        .logo-section {
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .logo-section img {
+            max-width: 280px;
+            filter: brightness(1.1);
+        }
+
+        .form-section {
+            padding: 3rem 2.5rem;
+            background: linear-gradient(135deg, #d9534f 0%, #c73e3e 100%);
+        }
+
+        .form-control {
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 0.875rem 1.25rem;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            font-family: 'Instrument Sans', sans-serif;
+        }
+
         .form-control:focus {
-            border-color: #D2D0A0;
-            box-shadow: 0 0 0 0.2rem rgba(198, 197, 164, 0.25);
+            border-color: #ffffff;
+            box-shadow: 0 0 0 0.2rem rgba(255, 255, 255, 0.25);
+            outline: none;
+        }
+
+        .btn-register {
+            background: white;
+            border: none;
+            border-radius: 10px;
+            padding: 0.875rem 2rem;
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: #d9534f;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-register:hover {
+            background: #f8f9fa;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 255, 255, 0.3);
+            color: #c73e3e;
+        }
+
+        .form-check-input:checked {
+            background-color: #c73e3e;
+            border-color: #c73e3e;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3e%3cpath fill='%23ffffff' d='M10 2a8 8 0 100 16 8 8 0 000-16z'/%3e%3c/svg%3e");
+        }
+
+        .form-check-input:focus {
+            border-color: #ffffff;
+            box-shadow: 0 0 0 0.25rem rgba(255, 255, 255, 0.25);
+        }
+
+        .brand-title {
+            color: #ffffff;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .welcome-text {
+            color: #f8f9fa;
+            font-weight: 400;
+            margin-bottom: 2rem;
+        }
+
+        .login-link {
+            color: #ffffff;
+            font-weight: 600;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .login-link:hover {
+            color: #f8f9fa;
+            text-decoration: underline;
+        }
+
+        .form-label {
+            font-weight: 500;
+            color: #f8f9fa;
+            margin-bottom: 0.5rem;
+        }
+
+        .error-message {
+            color: #ffffff;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+        }
+
+        .form-check-label {
+            color: #f8f9fa;
+            font-weight: 500;
         }
     </style>
 </head>
 
-<body style="background-color: #ae8267; background-image: linear-gradient(180deg, #c68a35 10%, #cc3737 100%); background-size: cover;">
-
-    <div class="container d-flex justify-content-center align-items-center" style="min-height: 100vh;">
-        <!-- Outer Row -->
+<body>
+    <div class="container-fluid d-flex justify-content-center align-items-center min-vh-100 py-4">
         <div class="row justify-content-center w-100">
-
-            <div class="col-xl-10 col-lg-12 col-md-9">
-
-                <div class="card o-hidden border-0 shadow-lg my-5">
-                    <div class="card-body p-0">
-                        <!-- Nested Row within Card Body -->
-                        <div class="row">
-                            <!-- Logo di kiri -->
-                            <div class="col-lg-6 d-none d-lg-block bg-login-image text-center align-content-center">
-                                <img src="{{ asset('images/lg.png') }}" alt="Logo MotoBengkel" class="img-fluid" style="max-width: 400px; margin-left: 40px">
+            <div class="col-xl-10 col-lg-12 col-md-10">
+                <div class="register-card">
+                    <div class="row g-0">
+                        <!-- Logo Section -->
+                        <div class="col-lg-6 d-none d-lg-block">
+                            <div class="logo-section h-100">
+                                <div class="text-center">
+                                    <img src="{{ asset('images/lg_tanpanama.png') }}" alt="MotoBengkel Logo" class="img-fluid">
+                                    <h3 class="text-dark mt-3 fw-bold">MotoBengkel</h3>
+                                    <p class="text-dark-50">Solusi Bengkel Motor Anda</p>
+                                </div>
                             </div>
+                        </div>
+                        
+                        <!-- Form Section -->
+                        <div class="col-lg-6">
+                            <div class="form-section">
+                                <div class="text-center mb-4">
+                                    <h2 class="brand-title">Buat Akun Baru!</h2>
+                                    <p class="welcome-text">Daftar untuk mulai menggunakan layanan kami</p>
+                                </div>
 
-                            <!-- Form di kanan -->
-                            <div class="col-lg-6">
-                                <div class="p-5">
-                                    <div class="text-center">
-                                        <h1 class="h4 text-gray-900 mb-4">Buat Akun Baru!</h1>
+                                <!-- Register Form -->
+                                <form method="POST" action="{{ route('register') }}">
+                                    @csrf
+
+                                    <!-- Radio Button untuk Peran -->
+                                    <div class="mb-3 text-center">
+                                        <label class="form-label d-block">Daftar Sebagai:</label>
+                                        <div class="d-flex justify-content-center gap-4">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="usertype" id="usertype_user" value="user" {{ old('usertype', 'user') == 'user' ? 'checked' : '' }} required>
+                                                <label class="form-check-label" for="usertype_user">Pelanggan</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="usertype" id="usertype_bengkel" value="bengkel" {{ old('usertype') == 'bengkel' ? 'checked' : '' }} required>
+                                                <label class="form-check-label" for="usertype_bengkel">Bengkel</label>
+                                            </div>
+                                        </div>
+                                        @error('usertype')
+                                            <div class="error-message">{{ $message }}</div>
+                                        @enderror
                                     </div>
 
-                                    <!-- Form Registrasi -->
-                                    <form method="POST" action="{{ route('register') }}" class="user">
-                                        @csrf
-
-                                        <!-- Radio Button untuk Peran -->
-                                        <div class="form-group text-center">
-                                            <label class="text-gray-900 mb-2 d-block">Daftar Sebagai:</label>
-                                            <div class="d-flex justify-content-center">
-                                                <div class="form-check mr-4">
-                                                    <input class="form-check-input" type="radio" name="usertype" id="usertype_user" value="user" {{ old('usertype', 'user') == 'user' ? 'checked' : '' }} required>
-                                                    <label class="form-check-label" for="usertype_user">Pelanggan</label>
-                                                </div>
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="radio" name="usertype" id="usertype_bengkel" value="bengkel" {{ old('usertype') == 'bengkel' ? 'checked' : '' }} required>
-                                                    <label class="form-check-label" for="usertype_bengkel">Bengkel</label>
-                                                </div>
-                                            </div>
-                                            @error('usertype')
-                                                <span class="text-danger">{{ $message }}</span>
-                                            @enderror
-                                        </div>
-
-                                        <!-- Input Nama -->
-                                        <div class="form-group">
-                                            <input type="text" class="form-control form-control-user" id="name" name="name" value="{{ old('name') }}" placeholder="Nama Pengguna" required autofocus>
-                                            @error('name')
-                                                <span class="text-danger">{{ $message }}</span>
-                                            @enderror
-                                        </div>
-
-                                        <!-- Input Email -->
-                                        <div class="form-group">
-                                            <input type="email" class="form-control form-control-user" id="email" name="email" value="{{ old('email') }}" placeholder="Email" required>
-                                            @error('email')
-                                                <span class="text-danger">{{ $message }}</span>
-                                            @enderror
-                                        </div>
-
-                                        <!-- Input Kata Sandi -->
-                                        <div class="form-group row">
-                                            <div class="col-sm-6 mb-3 mb-sm-0">
-                                                <input type="password" class="form-control form-control-user" id="password" name="password" placeholder="Kata Sandi" required>
-                                            </div>
-                                            <div class="col-sm-6">
-                                                <input type="password" class="form-control form-control-user" id="password_confirmation" name="password_confirmation" placeholder="Ulangi Kata Sandi" required>
-                                            </div>
-                                        </div>
-
-                                        <!-- Tombol Daftar -->
-                                        <button type="submit" class="btn btn-user btn-block" style="background-color: #F97316; color:white">Daftar Akun</button>
-
-                                    </form>
-                                    <!-- End of Form Registrasi -->
-
-                                    <hr>
-                                    <div class="text-center">
-                                        <p class="small">Sudah punya akun? <a href="{{ route('login') }}" style="color: #EF4444; font-weight: 700">Masuk</a></p>
+                                    <!-- Input Nama -->
+                                    <div class="mb-3">
+                                        <label for="name" class="form-label">Nama Pengguna</label>
+                                        <input type="text" class="form-control" id="name" name="name" value="{{ old('name') }}" placeholder="Masukkan nama pengguna" required autofocus>
+                                        @error('name')
+                                            <div class="error-message">{{ $message }}</div>
+                                        @enderror
                                     </div>
+
+                                    <!-- Input Email -->
+                                    <div class="mb-3">
+                                        <label for="email" class="form-label">Email</label>
+                                        <input type="email" class="form-control" id="email" name="email" value="{{ old('email') }}" placeholder="Masukkan email Anda" required>
+                                        @error('email')
+                                            <div class="error-message">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+
+                                    <!-- Input Kata Sandi -->
+                                    <div class="mb-3">
+                                        <label for="password" class="form-label">Kata Sandi</label>
+                                        <input type="password" class="form-control" id="password" name="password" placeholder="Masukkan kata sandi" required>
+                                        @error('password')
+                                            <div class="error-message">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+
+                                    <!-- Input Konfirmasi Kata Sandi -->
+                                    <div class="mb-3">
+                                        <label for="password_confirmation" class="form-label">Ulangi Kata Sandi</label>
+                                        <input type="password" class="form-control" id="password_confirmation" name="password_confirmation" placeholder="Ulangi kata sandi" required>
+                                    </div>
+
+                                    <!-- Register Button -->
+                                    <button type="submit" class="btn btn-register w-100 mb-3">
+                                        <i class="fas fa-user-plus me-2"></i>Daftar
+                                    </button>
+                                </form>
+
+                                <hr class="my-4" style="background-color: #ffffff;">
+                                
+                                <!-- Login Link -->
+                                <div class="text-center">
+                                    <p class="mb-0">Sudah punya akun? 
+                                        <a href="{{ route('login') }}" class="login-link">Masuk Sekarang</a>
+                                    </p>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-
             </div>
-
         </div>
     </div>
 
-    <!-- Bootstrap core JavaScript-->
-    <script src="{{ asset('sbadmin2/vendor/jquery/jquery.min.js') }}"></script>
-    <script src="{{ asset('sbadmin2/vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
-
-    <!-- Core plugin JavaScript-->
-    <script src="{{ asset('sbadmin2/vendor/jquery-easing/jquery.easing.min.js') }}"></script>
-
-    <!-- Custom scripts for all pages-->
-    <script src="{{ asset('sbadmin2/js/sb-admin-2.min.js') }}"></script>
-
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 
 </html>
