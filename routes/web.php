@@ -110,5 +110,14 @@ Route::middleware(['auth', 'bengkelService'])->group(function () {
 Route::middleware(['auth', 'tambalBan'])->group(function () {
     Route::get('/tambalBan/dashboard', [BengkelTambalBanController::class, 'index'])->name('tambalBan.dashboard');
     Route::get('/tambalBan/jasa', [BengkelTambalBanController::class, 'jasa'])->name('tambalBan.jasa');
+
     Route::put('/bengkelTambalBan/{id}', [BengkelTambalBanController::class, 'update'])->name('tambalBan.update');
+
+    Route::get('/jasa-service', [BengkelTambalBanController::class, 'jasaService'])->name('jasa.service');
+    Route::post('/jasa-service', [BengkelTambalBanController::class, 'storeJasaService'])->name('jasa.service.store');
+
+    // Anda bisa tambahkan route untuk edit, update, dan delete di sini nanti
+    Route::get('/jasa-service/{id}/edit', [BengkelTambalBanController::class, 'editJasaService'])->name('jasa.service.edit');
+    Route::put('/jasa-service/{id}', [BengkelTambalBanController::class, 'updateJasaService'])->name('jasa.service.update');
+    Route::delete('/jasa-service/{id}', [BengkelTambalBanController::class, 'destroyJasaService'])->name('jasa.service.destroy');
 });

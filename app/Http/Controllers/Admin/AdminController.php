@@ -13,6 +13,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Jasa;
+use App\Models\JasaService;
 
 class AdminController extends Controller
 {
@@ -693,7 +694,7 @@ class AdminController extends Controller
             return redirect()->back()->with('error', 'Gagal menghapus jasa layanan');
         }
     }
-    
+
 
     
     

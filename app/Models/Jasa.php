@@ -19,4 +19,9 @@ class Jasa extends Model
         'jenis_jasa',
         'deskripsi',
     ];
+
+    public function jasaServices()
+    {
+        return $this->hasMany(JasaService::class);
+    }
 }

@@ -5,8 +5,11 @@ namespace App\Http\Controllers\Bengkel;
 use App\Models\Bengkel;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use App\Models\Jasa;
+use App\Models\JasaService;
 
 class BengkelTambalBanController extends Controller
 {
@@ -75,8 +78,100 @@ class BengkelTambalBanController extends Controller
         return response()->json(['message' => 'Bengkel berhasil diperbarui!'], 200);
     }
 
-    public function jasa()
+    public function jasa(Request $request)
     {
         return view ('tambalBan.jasa');
     }
+
+    // AdminController.php
+
+    // ==================== JASA SERVICE MANAGEMENT ====================
+
+    public function jasaService(Request $request)
+    {
+        // Ambil SEMUA KATEGORI untuk dropdown di form tambah data
+        $kategoriJasa = Jasa::orderBy('jenis_jasa', 'asc')->get();
+
+        // Ambil semua data JasaService dengan relasi ke kategorinya
+        $query = JasaService::with('jasa');
+
+        if ($request->has('search') && !empty($request->search)) {
+            $search = $request->search;
+            $query->where('nama_jasa', 'LIKE', "%{$search}%")
+                  ->orWhereHas('jasa', function($q) use ($search) {
+                      $q->where('jenis_jasa', 'LIKE', "%{$search}%");
+                  });
+        }
+        
+        $jasaServices = $query->latest()->paginate(10);
+        
+        // Kirim data service dan data kategori ke view
+        return view('tambalBan.jasa', compact('jasaServices', 'kategoriJasa'));
+    }
+
+    public function storeJasaService(Request $request)
+    {
+        $validated = $request->validate([
+            'jasa_id' => 'required|exists:jasas,id',
+            'nama_jasa' => 'required|string|max:255',
+            'harga_jasa' => 'required|numeric|min:0',
+        ]);
+
+        JasaService::create($validated);
+        return redirect()->route('jasa.service.store')->with('success', 'Jasa service baru berhasil ditambahkan!');
+    }
+
+    public function editJasaService($id)
+    {
+        try {
+            // Cari Jasa Service yang akan di-edit
+            $jasaService = JasaService::findOrFail($id);
+
+            // Ambil semua kategori untuk pilihan dropdown
+            $kategoriJasa = Jasa::orderBy('jenis_jasa', 'asc')->get();
+
+            // Kirim data ke view edit
+            return view('tambalBan.edit_jasa', compact('jasaService', 'kategoriJasa'));
+        } catch (\Exception $e) {
+            Log::error('Error menampilkan form edit Jasa Service: ' . $e->getMessage());
+            return redirect()->route('jasa.service.edit')->with('error', 'Jasa Service tidak ditemukan.');
+        }
+    
+    }
+
+    public function updateJasaService(Request $request, $id)
+    {
+        try {
+            $jasaService = JasaService::findOrFail($id);
+            
+            $validated = $request->validate([
+                'jasa_id' => 'required|exists:jasas,id',
+                // Aturan unique diubah agar tidak memeriksa nama Jasa Service yang sedang diedit
+                'nama_jasa' => 'required|string|max:255|unique:jasa_services,nama_jasa,' . $id,
+                'harga_jasa' => 'required|numeric|min:0',
+            ]);
+
+            $jasaService->update($validated);
+
+            return redirect()->route('jasa.service')->with('success', 'Jasa Service berhasil diperbarui!');
+        } catch (\Exception $e) {
+            Log::error('Error memperbarui Jasa Service: ' . $e->getMessage());
+            return redirect()->back()->withInput()->with('error', 'Gagal memperbarui Jasa Service.');
+        }
+    }
+
+    public function destroyJasaService($id)
+    {
+        try {
+            $jasaService = JasaService::findOrFail($id);
+            $jasaService->delete();
+
+            return redirect()->route('jasa.service')->with('success', 'Jasa Service berhasil dihapus.');
+        } catch (\Exception $e) {
+            Log::error('Error menghapus Jasa Service: ' . $e->getMessage());
+            return redirect()->route('jasa.service.destroy')->with('error', 'Gagal menghapus Jasa Service.');
+        }
+    }
+
+    
 }
