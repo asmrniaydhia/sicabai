@@ -117,6 +117,8 @@ Route::middleware(['auth', 'tambalBan'])->group(function () {
     Route::get('/tambalBan/dashboard', [BengkelTambalBanController::class, 'index'])->name('tambalBan.dashboard');
     Route::get('/tambalBan/jasa', [BengkelTambalBanController::class, 'jasa'])->name('tambalBan.jasa');
 
+    Route::get('/tambalBan/ratings', [BengkelTambalBanController::class, 'ratings'])->name('tambalBan.ratings');
+    
     Route::put('/bengkelTambalBan/{id}', [BengkelTambalBanController::class, 'update'])->name('tambalBan.update');
 
     Route::get('/jasa-service', [BengkelTambalBanController::class, 'jasaService'])->name('jasa.service');

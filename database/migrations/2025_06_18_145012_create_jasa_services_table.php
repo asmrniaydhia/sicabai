@@ -13,11 +13,16 @@ return new class extends Migration
     {
         Schema::create('jasa_services', function (Blueprint $table) {
         $table->id();
-        // Kolom ini akan terhubung ke tabel 'jasas' (kategori)
+        $table->foreignId('id_user')->constrained('users')->onDelete('cascade'); // Merujuk ke tabel users
+        $table->foreignId('id_bengkel')->constrained('bengkel')->onDelete('cascade'); // Merujuk ke tabel bengkel
         $table->foreignId('jasa_id')->constrained()->onDelete('cascade');
         $table->string('nama_jasa'); // Nama jasa spesifik, contoh: Ganti Oli
         $table->unsignedInteger('harga_jasa');
         $table->timestamps();
+
+        $table->index('id_user');
+        $table->index('id_bengkel');
+        $table->index('jasa_id');
     });
     }
 

@@ -33,6 +33,17 @@
             <span>Kelola Toko</span>
         </a>
     </li>
+
+    <!-- Nav Item - Rating dan Ulasan -->
+    <li class="nav-item {{ request()->is('bengkelService/ratings') ? 'active' : '' }}">
+        <a class="nav-link" href="{{ route('bengkelService.ratings') }}">
+            <i class="fas fa-fw fa-star"></i>
+            <span>Rating dan Ulasan</span>
+        </a>
+    </li>
+
+    <!-- Divider -->
+    <hr class="sidebar-divider my-2" style="border-color: rgba(255, 255, 255, 0.3);">
 </ul>
 
 <style>

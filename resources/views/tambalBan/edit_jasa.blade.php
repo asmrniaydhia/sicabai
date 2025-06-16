@@ -1,126 +1,125 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edit Jasa Layanan</title>
-    <style>
-        body { font-family: Arial, sans-serif; background: #f5f5f5; color: #333; line-height: 1.6; margin: 0; padding: 0; }
-        .jasa-edit-container { max-width: 600px; margin: 40px auto; padding: 20px; }
-        .page-header { text-align: center; margin-bottom: 30px; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        .page-header h2 { font-size: 1.8rem; color: #2d3748; margin-bottom: 10px; }
-        .page-header p { color: #666; margin: 0; }
-        .form-container { background: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); border-top: 4px solid #f59e0b; animation: slideInUp 0.5s ease-out; }
-        .form-group { margin-bottom: 25px; }
-        .form-label { display: block; font-weight: bold; color: #2d3748; margin-bottom: 8px; font-size: 1rem; }
-        .form-input, .form-select, .form-control { width: 100%; padding: 12px 15px; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 1rem; transition: all 0.3s ease; font-family: inherit; }
-        .form-input:focus, .form-select:focus, .form-control:focus { outline: none; border-color: #f59e0b; box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1); }
-        .form-textarea { min-height: 120px; resize: vertical; }
-        .form-buttons { display: flex; gap: 15px; justify-content: center; margin-top: 30px; flex-wrap: wrap; }
-        .btn { padding: 12px 25px; border: none; border-radius: 8px; font-size: 1rem; cursor: pointer; transition: all 0.3s ease; font-weight: bold; text-decoration: none; display: inline-block; text-align: center; min-width: 140px; }
-        .btn:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(0,0,0,0.2); text-decoration: none; }
-        .btn-warning { background: linear-gradient(135deg, #f59e0b, #d97706); color: white; }
-        .btn-warning:hover { background: linear-gradient(135deg, #d97706, #b45309); color: white; }
-        .btn-secondary { background: linear-gradient(135deg, #6c757d, #5a6268); color: white; }
-        .btn-secondary:hover { background: linear-gradient(135deg, #5a6268, #495057); color: white; }
-        .invalid-feedback, .error-message { color: #ef4444; font-size: 0.9rem; margin-top: 5px; display: block; }
-        .alert { padding: 15px; margin-bottom: 20px; border: 1px solid transparent; border-radius: 8px; font-weight: 500; }
-        .alert-success { color: #155724; background-color: #d4edda; border-color: #c3e6cb; }
-        .alert-danger { color: #721c24; background-color: #f8d7da; border-color: #f5c6cb; }
-        @keyframes slideInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
-    </style>
-</head>
-<body>
-    <div class="jasa-edit-container">
+```php
+@extends('layouts.app')
 
-        <div class="page-header">
-            <h2>✏️ Edit Jasa Service</h2>
-            <p>Perbarui informasi untuk: <strong>{{ $jasaService->nama_jasa }}</strong></p>
-        </div>
+@section('content')
+<div class="fade-in container-fluid py-5">
+    <div class="row">
+        <div class="col-lg-8 offset-lg-2">
+            <div class="card border-0 shadow-sm" style="border-radius: 15px;">
+                <div class="card-body p-4">
+                    <h5 class="fw-bold mb-4 text-dark text-start">
+                        <i class="fas fa-cogs me-2" style="color: #d9534f;"></i>Edit Jasa Service
+                    </h5>
+                    
+                    <!-- Notifikasi -->
+                    @if ($errors->any())
+                        <div class="alert alert-danger border-start border-5 border-danger d-flex align-items-center" role="alert">
+                            <i class="fas fa-exclamation-circle me-2"></i>
+                            <ul class="mb-0">
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
+                    @if (session('success'))
+                        <div class="alert alert-success border-start border-5 border-success d-flex align-items-center" role="alert">
+                            <i class="fas fa-check-circle me-2"></i>
+                            {{ session('success') }}
+                        </div>
+                    @endif
+                    @if (session('error'))
+                        <div class="alert alert-danger border-start border-5 border-danger d-flex align-items-center" role="alert">
+                            <i class="fas fa-exclamation-circle me-2"></i>
+                            {{ session('error') }}
+                        </div>
+                    @endif
 
-        @if(session('success'))
-        <div class="alert alert-success">
-            ✅ {{ session('success') }}
-        </div>
-        @endif
-        @if(session('error'))
-        <div class="alert alert-danger">
-            ❌ {{ session('error') }}
-        </div>
-        @endif
+                    <!-- Form Edit Jasa Service -->
+                    <form id="editJasaServiceForm" action="{{ route('jasa.service.update', $jasaService->id) }}" method="POST">
+                        @csrf
+                        @method('PUT')
 
-        <div class="form-container">
-            {{-- Form disesuaikan untuk update Jasa Service --}}
-            <form id="editJasaServiceForm" action="{{ route('jasa.service.update', $jasaService->id) }}" method="POST">
-                @csrf
-                @method('PUT')
-                
-                {{-- Dropdown untuk Kategori Jasa --}}
-                <div class="form-group">
-                    <label for="jasa_id" class="form-label">Kategori Jasa <span style="color:red;">*</span></label>
-                    <select id="jasa_id" name="jasa_id" class="form-select @error('jasa_id') is-invalid @enderror" required>
-                        <option value="" disabled>-- Pilih Kategori --</option>
-                        @foreach ($kategoriJasa as $kategori)
-                            <option 
-                                value="{{ $kategori->id }}" 
-                                {{-- Pilih kategori yang sesuai dengan data saat ini --}}
-                                {{ old('jasa_id', $jasaService->jasa_id) == $kategori->id ? 'selected' : '' }}>
-                                {{ $kategori->jenis_jasa }}
-                            </option>
-                        @endforeach
-                    </select>
-                    @error('jasa_id')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                    @enderror
+                        <!-- Dropdown Kategori Jasa -->
+                        <div class="mb-4 text-start">
+                            <label for="jasa_id" class="form-label fw-medium text-dark">
+                                <i class="fas fa-cog me-2" style="color: #d9534f;"></i>Kategori Jasa <span class="text-danger">*</span>
+                            </label>
+                            <div class="input-group">
+                                <span class="input-group-text rounded-start-3" style="background-color: #f8f9fa;"><i class="fas fa-cog text-muted"></i></span>
+                                <select class="form-select rounded-end-3 @error('jasa_id') is-invalid @enderror" id="jasa_id" name="jasa_id" required>
+                                    <option value="">-- Pilih Kategori Jasa --</option>
+                                    @foreach ($kategoriJasa as $kategori)
+                                        <option value="{{ $kategori->id }}" {{ old('jasa_id', $jasaService->jasa_id) == $kategori->id ? 'selected' : '' }}>
+                                            {{ $kategori->jenis_jasa }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                @error('jasa_id')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <!-- Input Nama Jasa -->
+                        <div class="mb-4 text-start">
+                            <label for="nama_jasa" class="form-label fw-medium text-dark">
+                                <i class="fas fa-tag me-2" style="color: #d9534f;"></i>Nama Jasa Spesifik <span class="text-danger">*</span>
+                            </label>
+                            <div class="input-group">
+                                <span class="input-group-text rounded-start-3" style="background-color: #f8f9fa;"><i class="fas fa-tag text-muted"></i></span>
+                                <input type="text" class="form-control rounded-end-3 @error('nama_jasa') is-invalid @enderror" id="nama_jasa" name="nama_jasa" value="{{ old('nama_jasa', $jasaService->nama_jasa) }}" placeholder="Masukkan nama jasa..." required>
+                                @error('nama_jasa')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <!-- Input Harga Jasa -->
+                        <div class="mb-4 text-start">
+                            <label for="harga_jasa" class="form-label fw-medium text-dark">
+                                <i class="fas fa-money-bill-wave me-2" style="color: #d9534f;"></i>Harga Jasa <span class="text-danger">*</span>
+                            </label>
+                            <div class="input-group">
+                                <span class="input-group-text rounded-start-3" style="background-color: #f8f9fa;">Rp</span>
+                                <input type="number" class="form-control rounded-end-3 @error('harga_jasa') is-invalid @enderror" id="harga_jasa" name="harga_jasa" value="{{ old('harga_jasa', $jasaService->harga_jasa) }}" placeholder="0" min="0" step="0.01" required>
+                                @error('harga_jasa')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <!-- Tombol Aksi -->
+                        <div class="d-flex justify-content-end gap-2 mt-4">
+                            <button type="submit" class="btn btn-primary btn-md rounded-3" style="background-color: #d9534f; border-color: #d9534f;">
+                                <i class="fas fa-save me-1"></i> Simpan Perubahan
+                            </button>
+                            <a href="{{ route('jasa.service') }}" class="btn btn-secondary btn-md rounded-3">
+                                <i class="fas fa-arrow-left me-1"></i> Kembali
+                            </a>
+                        </div>
+                    </form>
                 </div>
-
-                {{-- Input untuk Nama Jasa Spesifik --}}
-                <div class="form-group">
-                    <label for="nama_jasa" class="form-label">Nama Jasa Spesifik <span style="color:red;">*</span></label>
-                    <input 
-                        type="text" 
-                        id="nama_jasa"
-                        name="nama_jasa" 
-                        class="form-control @error('nama_jasa') is-invalid @enderror"
-                        value="{{ old('nama_jasa', $jasaService->nama_jasa) }}"
-                        placeholder="Masukkan nama jasa..."
-                        required
-                    >
-                    @error('nama_jasa')
-                        <span class="invalid-feedback">{{ $message }}</span>
-                    @enderror
-                </div>
-
-                {{-- Input untuk Harga Jasa --}}
-                <div class="form-group">
-                    <label for="harga_jasa" class="form-label">Harga <span style="color:red;">*</span></label>
-                    <input 
-                        type="number" 
-                        id="harga_jasa"
-                        name="harga_jasa" 
-                        class="form-control @error('harga_jasa') is-invalid @enderror"
-                        value="{{ old('harga_jasa', $jasaService->harga_jasa) }}"
-                        placeholder="Masukkan harga jasa..."
-                        required
-                        min="0"
-                    >
-                    @error('harga_jasa')
-                        <span class="invalid-feedback">{{ $message }}</span>
-                    @enderror
-                </div>
-
-
-                <div class="form-buttons">
-                    <button type="submit" class="btn btn-warning">
-                        💾 Simpan Perubahan
-                    </button>
-                    {{-- Link kembali ke halaman daftar jasa service --}}
-                    <a href="{{ route('jasa.service') }}" class="btn btn-secondary">
-                        ⬅️ Kembali
-                    </a>
-                </div>
-            </form>
+            </div>
         </div>
     </div>
-</body>
-</html>
+</div>
+
+<style>
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .btn-primary:hover, .btn-secondary:hover {
+        background-color: #c73e3e;
+        border-color: #c73e3e;
+        transform: translateY(-2px);
+    }
+
+    .form-control:focus, .form-select:focus {
+        border-color: #d9534f;
+        box-shadow: 0 0 0 0.25rem rgba(217, 83, 79, 0.25);
+    }
+</style>
+@endsection

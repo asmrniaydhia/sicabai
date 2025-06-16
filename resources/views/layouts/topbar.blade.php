@@ -1,22 +1,11 @@
 <!-- Topbar -->
-<nav class="navbar navbar-expand navbar-light bg-white shadow-sm py-3">
+<nav class="navbar navbar-expand navbar-light bg-white shadow-sm py-3" style="z-index: 1030;">
     <div class="container-fluid">
         <!-- Sidebar Toggle (Topbar) -->
-        <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle me-3">
+        <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle me-3" type="button">
             <i class="fa fa-bars text-dark"></i>
         </button>
 
-        <!-- Topbar Search -->
-        <form class="d-none d-sm-inline-block form-inline me-auto ms-md-3 my-2 my-md-0 mw-100 navbar-search">
-            <div class="input-group">
-                <input type="text" class="form-control border-2" placeholder="Cari bengkel..." aria-label="Search" aria-describedby="basic-addon2">
-                <div class="input-group-append">
-                    <button class="btn" style="background-color: #d9534f; border-color: #d9534f; color: white;" type="button">
-                        <i class="fas fa-search fa-sm"></i>
-                    </button>
-                </div>
-            </div>
-        </form>
 
         <!-- Topbar Navbar -->
         <ul class="navbar-nav ms-auto align-items-center">
@@ -27,8 +16,7 @@
                     <img class="img-profile rounded-circle" src="{{ asset('images/undraw_profile.svg') }}" style="width: 30px; height: 30px;">
                 </a>
                 <!-- Dropdown - User Information -->
-                <div class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="userDropdown">
-                    <a ascend
+                <div class="dropdown-menu dropdown-menu-end shadow" style="z-index: 1031;" aria-labelledby="userDropdown">
                     <a class="dropdown-item" href="{{ route('profile.edit') }}">
                         <i class="fas fa-user fa-sm fa-fw me-2 text-gray-400"></i>
                         {{ __('Profile') }}
@@ -36,7 +24,7 @@
                     <div class="dropdown-divider"></div>
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
-                        <button type="submit" class="dropdown-item">
+                        <button type="submit" class="dropdown-item text-start" style="background: none; border: none;">
                             <i class="fas fa-sign-out-alt fa-sm fa-fw me-2 text-gray-400"></i>
                             {{ __('Log Out') }}
                         </button>
