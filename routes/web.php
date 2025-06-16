@@ -59,6 +59,14 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
         Route::put('/sparepart/{id}', [AdminController::class, 'updateSparepart'])->name('sparepart.update');
         Route::delete('/sparepart/{id}', [AdminController::class, 'destroySparepart'])->name('sparepart.destroy');
 
+        // Jasa
+        Route::get('/jasa', [AdminController::class, 'jasa'])->name('jasa');
+        Route::post('/jasa', [AdminController::class, 'storeJasa'])->name('jasa.store');
+        Route::get('/jasa/{id}/edit', [AdminController::class, 'editJasa'])->name('jasa.edit');
+        Route::put('/jasa/{id}', [AdminController::class, 'updateJasa'])->name('jasa.update');
+        Route::delete('/jasa/{id}', [AdminController::class, 'destroyJasa'])->name('jasa.destroy');
+
+
         // Bengkel
         Route::get('/bengkel', [AdminController::class, 'bengkel'])->name('bengkel'); // Ensure this is defined
         Route::post('/bengkel', [AdminController::class, 'storeBengkel'])->name('bengkel.store');
