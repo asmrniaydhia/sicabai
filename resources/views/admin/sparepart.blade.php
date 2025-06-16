@@ -311,8 +311,8 @@
                         <p>{{ $sparepart->deskripsi }}</p>
                     </div>
                     <div class="item-actions">
-                        <a href="{{ route('sparepart.edit', $sparepart->id) }}" class="btn btn-warning btn-small">✏️ Edit</a>
-                        <form action="{{ route('sparepart.destroy', $sparepart->id) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus?')">
+                        <a href="{{ route('admin.sparepart.edit', $sparepart->id) }}" class="btn btn-warning btn-small">✏️ Edit</a>
+                        <form action="{{ route('admin.sparepart.destroy', $sparepart->id) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus?')">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="btn btn-danger btn-small">🗑️ Hapus</button>
