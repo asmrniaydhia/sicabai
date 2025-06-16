@@ -33,6 +33,7 @@ Route::middleware(['auth', 'userMiddleware'])->group(function () {
     Route::get('/user/dashboard', [UserController::class, 'index'])->name('user.dashboard');
     Route::get('/bengkel/{id}/detail', [UserController::class, 'show'])->name('user.detail');
     Route::post('/ratings', [RatingController::class, 'store'])->name('ratings.store');
+    
 
 
 });

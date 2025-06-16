@@ -10,10 +10,13 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Jasa;
 use App\Models\JasaService;
+
+
 
 class AdminController extends Controller
 {
@@ -324,7 +327,7 @@ class AdminController extends Controller
             $user = User::findOrFail($id);
             
             // Prevent deleting own account
-            if ($user->id === auth()->id()) {
+            if ($user->id === Auth::id()) {
                 return redirect()->back()
                                ->with('error', 'Tidak dapat menghapus akun sendiri');
             }
@@ -792,7 +795,7 @@ class AdminController extends Controller
             $filename = 'backup_' . date('Y-m-d_H-i-s') . '.sql';
             
             // Log the backup action
-            Log::info('Database backup initiated by admin: ' . auth()->user()->name);
+            Log::info('Database backup initiated by admin: ' . Auth::user()->name);
             
             return redirect()->back()->with('success', 'Backup database berhasil dimulai');
         } catch (\Exception $e) {

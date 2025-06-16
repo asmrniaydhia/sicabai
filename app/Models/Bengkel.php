@@ -30,6 +30,11 @@ class Bengkel extends Model
     {
         return $this->hasMany(Rating::class, 'id_bengkel');
     }
+
+    public function barangs()
+    {
+        return $this->hasMany(Barang::class, 'id_bengkel');
+    }
     
     public function getAverageRatingAttribute()
     {

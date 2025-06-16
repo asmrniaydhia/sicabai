@@ -23,4 +23,9 @@ class Barang extends Model
     {
         return $this->belongsTo(User::class, 'id_user');
     }
+
+    public function getTotalHargaAttribute()
+    {
+        return $this->harga_jual + $this->harga_jasa;
+    }
 }

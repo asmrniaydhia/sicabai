@@ -72,7 +72,14 @@ class UserController extends Controller
      */
     public function show(string $id)
     {
-        $bengkel = Bengkel::with('ratings')->findOrFail($id);
+        $bengkel = Bengkel::with(['ratings', 'barangs.sparepart'])->findOrFail($id);
+
+        // // Debug: Log data to verify retrieval
+        // Log::info('Bengkel ID: ' . $bengkel->id);
+        // Log::info('Barangs Count: ' . $bengkel->barangs->count());
+        // Log::info('Barangs: ' . $bengkel->barangs->toJson());
+        // Log::info('Ratings Count: ' . $bengkel->ratings->count());
+        // Log::info('Average Rating: ' . ($bengkel->average_rating ?? 'null'));
 
         return view('user.detail', compact('bengkel'));
     }

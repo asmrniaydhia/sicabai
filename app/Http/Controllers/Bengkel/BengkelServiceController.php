@@ -49,16 +49,6 @@ class BengkelServiceController extends Controller
             'harga_jasa' => $validated['harga_jasa'],
             'stok' => $validated['stok'],
         ]);
-        // // Simpan data barang
-        // Barang::create([
-        //     'sparepart_id' => $validated['sparepart_id'],
-        //     'id_bengkel' => $bengkel->id, // Gunakan id_bengkel dari bengkel user
-        //     'merk' => $validated['merk'],
-        //     'harga_jual' => $validated['harga_jual'],
-        //     'stok' => $validated['stok'],
-        // ]);
-
-        // return redirect()->back()->with('success', 'Barang berhasil ditambahkan.');
     }
 
 
@@ -68,17 +58,24 @@ class BengkelServiceController extends Controller
      */
     public function update(Request $request, string $id)
     {
+        // Clean the WhatsApp number
+        $request->merge([
+            'whatsapp' => preg_replace('/[^0-9]/', '', $request->whatsapp),
+        ]);
+
+    
         // Ambil bengkel berdasarkan id dan id_user yang sedang login
         $bengkel = Bengkel::where('id', $id)->where('id_user', Auth::id())->firstOrFail();
 
+        // Validate the request
         $validated = $request->validate([
             'nama' => 'required|string|max:100',
-            'whatsapp' => 'required|regex:/^[0-9]{10,13}$/', // Validasi nomor lokal 10-13 digit
-            'foto_bengkel' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'whatsapp' => 'required|regex:/^[0-9]{10,13}$/',
+            'foto_bengkel' => 'required|image|mimes:jpeg,png,jpg|max:2048',
             'alamat' => 'required|string',
             'jasa_penjemputan' => 'required|in:ada,tidak',
             'jam_buka' => 'required|date_format:H:i',
-            'jam_tutup' => 'required|date_format:H:i|after:jam_buka', // Hapus kondisi dinamis untuk kesederhanaan
+            'jam_tutup' => 'required|date_format:H:i|after:jam_buka',
             'hari_libur' => 'nullable|array',
             'hari_libur.*' => 'in:Senin,Selasa,Rabu,Kamis,Jumat,Sabtu,Minggu',
             'lat' => 'required|numeric|between:-90,90',
@@ -122,18 +119,18 @@ class BengkelServiceController extends Controller
         return response()->json(['message' => 'Bengkel berhasil diperbarui!'], 200);
     }
 
-    // public function edit($id)
-    // {
-    //     $barang = Barang::findOrFail($id);
-    //     $spareparts = Sparepart::all();
-    //     return view('bengkelService.edit_barang', compact('barang', 'spareparts'));
-    // }
+    public function edit($id)
+    {
+        // $barang = Barang::findOrFail($id);
+        // $spareparts = Sparepart::all();
+        // return view('bengkelService.edit_barang', compact('barang', 'spareparts'));
+    }
 
-    // public function destroy($id)
-    // {
-    //     Barang::destroy($id);
-    //     return back()->with('success', 'Barang berhasil dihapus.');
-    // }
+    public function destroy($id)
+    {
+        // Barang::destroy($id);
+        // return back()->with('success', 'Barang berhasil dihapus.');
+    }
 
 
 

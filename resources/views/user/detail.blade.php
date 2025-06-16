@@ -151,6 +151,84 @@
             </div>
         </div>
 
+        <!-- Daftar Barang dan Jasa (Hanya untuk Bengkel Service) -->
+        @if ($bengkel->jenis_bengkel === 'service')
+            <div class="card mb-5 border-0 shadow-sm" style="border-radius: 15px;">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h5 class="fw-bold text-dark"><i class="fas fa-tools me-2" style="color: #d9534f;"></i>Daftar Barang dan Jasa</h5>
+                        @if ($bengkel->barangs->count() > 0)
+                            <button class="btn btn-primary" style="background-color: #d9534f; border-color: #d9534f;" data-bs-toggle="modal" data-bs-target="#barangModal">
+                                <i class="fas fa-eye me-2"></i>Lihat Barang
+                            </button>
+                        @endif
+                    </div>
+                    @if ($bengkel->barangs->count() == 0)
+                        <div class="text-center py-5">
+                            <i class="fas fa-tools fa-3x text-muted mb-3"></i>
+                            <h5 class="text-muted">Tidak Ada Barang Tersedia</h5>
+                            <p class="text-muted">Bengkel ini belum memiliki daftar barang atau jasa.</p>
+                        </div>
+                    @endif
+                </div>
+            </div>
+
+            <!-- Modal Barang -->
+            <div class="modal fade" id="barangModal" tabindex="-1" aria-labelledby="barangModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header" style="background-color: #d9534f; color: white;">
+                            <h5 class="modal-title" id="barangModalLabel"><i class="fas fa-tools me-2"></i>Barang Bengkel {{ $bengkel->nama }}</h5>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            @if ($bengkel->barangs->count() > 0)
+                                <div class="table-responsive">
+                                    <table class="table table-hover align-middle">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th>Sparepart</th>
+                                                <th>Merk</th>
+                                                <th>Harga Jual (Rp)</th>
+                                                <th>Harga Jasa (Rp)</th>
+                                                <th>Total Harga (Rp)</th>
+                                                <th>Stok</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach ($bengkel->barangs as $barang)
+                                                <tr>
+                                                    <td>{{ $barang->sparepart ? $barang->sparepart->nama_sparepart : 'Tidak Diketahui' }}</td>
+                                                    <td>{{ $barang->merk }}</td>
+                                                    <td>{{ number_format($barang->harga_jual, 2, ',', '.') }}</td>
+                                                    <td>{{ number_format($barang->harga_jasa, 2, ',', '.') }}</td>
+                                                    <td>{{ number_format($barang->total_harga, 2, ',', '.') }}</td>
+                                                    <td>
+                                                        <span class="badge {{ $barang->stok > 0 ? 'bg-success' : 'bg-danger' }} rounded-pill px-3 py-2">
+                                                            {{ $barang->stok }} unit
+                                                        </span>
+                                                    </td>
+                                                </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
+                            @else
+                                <div class="text-center py-4">
+                                    <i class="fas fa-tools fa-3x text-muted mb-3"></i>
+                                    <h5 class="text-muted">Tidak Ada Barang Tersedia</h5>
+                                    <p class="text-muted">Bengkel ini belum memiliki daftar barang atau jasa.</p>
+                                </div>
+                            @endif
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        @endif
+
         <!-- Ulasan Pelanggan -->
         <div class="card mb-5 border-0 shadow-sm" style="border-radius: 15px;">
             <div class="card-body p-4">
@@ -334,6 +412,14 @@
 
     .alert-dismissible .btn-close {
         padding: 1rem;
+    }
+
+    .table th, .table td {
+        vertical-align: middle;
+    }
+
+    .modal-header .btn-close-white {
+        filter: invert(1);
     }
 </style>
 @endsection

@@ -41,7 +41,7 @@ class BengkelController extends Controller
 
         $validated = $request->validate([
             'nama' => 'required|string|max:100',
-            'whatsapp' => 'required|regex:/^[0-9]{10,13}$/', // Tetap validasi 10-13 digit lokal
+            'whatsapp' => 'required|regex:/^\+?[0-9]{10,13}$/', // Tetap validasi 10-13 digit lokal
             'jenis_bengkel' => 'required|in:service,tambal_ban',
             'foto_bengkel' => 'required|image|mimes:jpeg,png,jpg|max:2048',
             'alamat' => 'required|string',
