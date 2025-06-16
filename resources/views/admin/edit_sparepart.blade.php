@@ -252,7 +252,7 @@
 
         <!-- Form Container -->
         <div class="form-container">
-            <form id="editSparepartForm" action="{{ route('sparepart.update', $sparepart->id) }}" method="POST">
+            <form id="editSparepartForm" action="{{ route('admin.sparepart.update', $sparepart->id) }}" method="POST">
                 @csrf
                 @method('PUT')
                 

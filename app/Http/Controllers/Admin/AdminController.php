@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
+use App\Models\Jasa;
 
 class AdminController extends Controller
 {
@@ -586,6 +587,113 @@ class AdminController extends Controller
             return redirect()->back()->with('error', 'Gagal menghapus bengkel');
         }
     }
+
+
+
+    // ==================== JASA MANAGEMENT ====================
+
+    /**
+     * Menampilkan daftar semua jasa layanan
+     */
+    public function jasa(Request $request)
+    {
+        try {
+            $query = Jasa::query();
+            
+            // Fungsi pencarian
+            if ($request->has('search') && !empty($request->search)) {
+                $search = $request->search;
+                $query->where('jenis_jasa', 'LIKE', "%{$search}%")
+                      ->orWhere('deskripsi', 'LIKE', "%{$search}%");
+            }
+            
+            $jasas = $query->latest()->paginate(10);
+            
+            return view('admin.jasa', compact('jasas')); // Anda perlu membuat view admin.jasa.blade.php
+        } catch (\Exception $e) {
+            Log::error('Error di Jasa index: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Terjadi kesalahan saat memuat data jasa');
+        }
+    }
+
+    /**
+     * Menyimpan data jasa baru
+     */
+    public function storeJasa(Request $request)
+    {
+        try {
+            $validated = $request->validate([
+                'jenis_jasa' => 'required|string|max:255|unique:jasas,jenis_jasa',
+                'deskripsi' => 'nullable|string',
+            ], [
+                'jenis_jasa.required' => 'Nama jasa harus diisi.',
+                'jenis_jasa.unique' => 'Nama jasa sudah ada.',
+            ]);
+
+            Jasa::create($validated);
+
+            return redirect()->route('admin.jasa')->with('success', 'Jasa layanan berhasil ditambahkan!');
+        } catch (\Exception $e) {
+            Log::error('Error menyimpan jasa: ' . $e->getMessage());
+            return redirect()->back()->withInput()->with('error', 'Gagal menambahkan jasa layanan');
+        }
+    }
+
+    /**
+     * Menampilkan form edit untuk jasa
+     */
+    public function editJasa($id)
+    {
+        try {
+            $jasa = Jasa::findOrFail($id);
+            return view('admin.edit_jasa', compact('jasa')); // Anda perlu membuat view admin.edit_jasa.blade.php
+        } catch (\Exception $e) {
+            Log::error('Error edit jasa: ' . $e->getMessage());
+            return redirect()->route('admin.jasa')->with('error', 'Jasa layanan tidak ditemukan');
+        }
+    }
+
+    /**
+     * Memperbarui data jasa
+     */
+    public function updateJasa(Request $request, $id)
+    {
+        try {
+            $jasa = Jasa::findOrFail($id);
+            
+            $validated = $request->validate([
+                'jenis_jasa' => 'required|string|max:255|unique:jasas,jenis_jasa,' . $id,
+                'deskripsi' => 'nullable|string',
+            ], [
+                'jenis_jasa.required' => 'Nama jasa harus diisi.',
+                'jenis_jasa.unique' => 'Nama jasa sudah ada.',
+            ]);
+
+            $jasa->update($validated);
+
+            return redirect()->route('admin.jasa')->with('success', 'Jasa layanan berhasil diperbarui!');
+        } catch (\Exception $e) {
+            Log::error('Error update jasa: ' . $e->getMessage());
+            return redirect()->back()->withInput()->with('error', 'Gagal memperbarui jasa layanan');
+        }
+    }
+
+    /**
+     * Menghapus data jasa
+     */
+    public function destroyJasa($id)
+    {
+        try {
+            $jasa = Jasa::findOrFail($id);
+            $jasa->delete();
+
+            return redirect()->route('admin.jasa')->with('success', 'Jasa layanan berhasil dihapus.');
+        } catch (\Exception $e) {
+            Log::error('Error hapus jasa: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Gagal menghapus jasa layanan');
+        }
+    }
+    
 
     
     

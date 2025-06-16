@@ -38,9 +38,9 @@
         </a>
     </li>
 
-    <li class="nav-item {{ (request()->is('admin/jasa') || request()->is('sparepart')) ? 'active' : '' }}">
-        <a class="nav-link" href="{{ Auth::user()->usertype == 'admin' ? route('admin.sparepart') : route('sparepart') }}">
-            <i class="fas fa-boxes "></i>
+    <li class="nav-item {{ (request()->is('admin/jasa') || request()->is('jasa')) ? 'active' : '' }}">
+        <a class="nav-link" href="{{ Auth::user()->usertype == 'admin' ? route('admin.jasa') : route('jasa') }}">
+            <i class="fas fa-toolbox"></i>
             <span>Kategori Jasa</span>
         </a>
     </li>
