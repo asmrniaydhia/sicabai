@@ -1,8 +1,4 @@
-@extends('layouts.app')
 
-@section('title', 'Tambah Lokasi Bengkel')
-
-@section('content')
 <div class="fade-in container-fluid py-5">
     <div class="row justify-content-center">
         <div class="col-lg-10">
@@ -359,4 +355,3 @@
         overflow-y: auto;
     }
 </style>
-@endsection

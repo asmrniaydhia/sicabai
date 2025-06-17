@@ -273,10 +273,10 @@ document.addEventListener('DOMContentLoaded', function() {
         });
 
         // Update result count
-        resultCount.innerHTML = `Menampilkan <strong>${visibleCount}</strong> dari <strong>${userRows.length}</strong> user`;
+        resultCount.innerHTML = Menampilkan <strong>${visibleCount}</strong> dari <strong>${userRows.length}</strong> user;
         
         // Update total users badge
-        totalUsers.textContent = `Total: ${visibleCount} User`;
+        totalUsers.textContent = Total: ${visibleCount} User;
         
         // Show/hide no data message
         const noDataRow = document.getElementById('noDataRow');
