@@ -6,12 +6,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class JasaService extends Model
 {
-    public function jasa() // (nama relasi ke induknya)
-    {
-        return $this->belongsTo(Jasa::class);
-    }
-
-    // Jangan lupa tambahkan $fillable
     protected $fillable = [
         'id_user',
         'id_bengkel',
@@ -30,8 +24,8 @@ class JasaService extends Model
         return $this->belongsTo(User::class, 'id_user');
     }
 
-    public function jasaService()
+    public function jasa()
     {
-        return $this->belongsTo(JasaService::class, 'jasa_id');
+        return $this->belongsTo(Jasa::class, 'jasa_id');
     }
 }

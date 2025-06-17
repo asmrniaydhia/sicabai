@@ -38,7 +38,7 @@ class Bengkel extends Model
 
     public function jasaService()
     {
-        return $this->hasMany(JasaService::class, 'jasa_id');
+        return $this->hasMany(JasaService::class, 'id_bengkel');
     }
     
     public function getAverageRatingAttribute()

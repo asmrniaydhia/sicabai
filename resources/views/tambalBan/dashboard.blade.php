@@ -153,156 +153,174 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script>
     $(document).ready(function() {
-        // Initialize Leaflet map
-        var map = L.map('map-canvas').setView([{{ $bengkelTambalBan->latitude ?? -3.320611 }}, {{ $bengkelTambalBan->longitude ?? 114.591866 }}], 15);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '© OpenStreetMap contributors',
-            maxZoom: 19
-        }).addTo(map);
+    // Initialize Leaflet map
+    var map = L.map('map-canvas').setView([{{ $bengkelTambalBan->latitude ?? -3.320611 }}, {{ $bengkelTambalBan->longitude ?? 114.591866 }}], 15);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors',
+        maxZoom: 19
+    }).addTo(map);
 
-        // Create draggable marker
-        var marker = L.marker([{{ $bengkelTambalBan->latitude ?? -3.320611 }}, {{ $bengkelTambalBan->longitude ?? 114.591866 }}], {
-            draggable: false
-        }).addTo(map);
+    // Create draggable marker
+    var marker = L.marker([{{ $bengkelTambalBan->latitude ?? -3.320611 }}, {{ $bengkelTambalBan->longitude ?? 114.591866 }}], {
+        draggable: false
+    }).addTo(map);
 
-        // Custom marker icon
-        var customIcon = L.divIcon({
-            html: '<i class="fas fa-map-marker-alt fa-2x" style="color: #d9534f;"></i>',
-            iconSize: [30, 30],
-            className: 'custom-div-icon'
+    // Custom marker icon
+    var customIcon = L.divIcon({
+        html: '<i class="fas fa-map-marker-alt fa-2x" style="color: #d9534f;"></i>',
+        iconSize: [30, 30],
+        className: 'custom-div-icon'
+    });
+    marker.setIcon(customIcon);
+
+    // Store initial form values
+    var initialValues = {
+        nama: $('input[name="nama"]').val(),
+        whatsapp: $('input[name="whatsapp"]').val(),
+        alamat: $('textarea[name="alamat"]').val(),
+        jasa_penjemputan: $('input[name="jasa_penjemputan"]:checked').val(),
+        jam_buka: $('#jam_buka').val(),
+        jam_tutup: $('#jam_tutup').val(),
+        hari_libur: $('input[name="hari_libur[]"]:checked').map(function() { return this.value; }).get(),
+        lat: $('#lat').val(),
+        lng: $('#lng').val()
+    };
+
+    // Toggle edit mode
+    $('#editButton').on('click', function() {
+        $('#bengkelForm input, #bengkelForm textarea, #bengkelForm input[type="file"]').prop('readonly', false).prop('disabled', false);
+        marker.options.draggable = true;
+        marker.dragging.enable();
+        $('#saveButton').removeClass('d-none');
+        $('#cancelButton').removeClass('d-none');
+        $('#editButton').addClass('d-none');
+    });
+
+    // Cancel/Reset button
+    $('#cancelButton').on('click', function() {
+        $('input[name="nama"]').val(initialValues.nama);
+        $('input[name="whatsapp"]').val(initialValues.whatsapp);
+        $('textarea[name="alamat"]').val(initialValues.alamat);
+        $('input[name="jasa_penjemputan"][value="' + initialValues.jasa_penjemputan + '"]').prop('checked', true);
+        $('#jam_buka').val(initialValues.jam_buka);
+        $('#jam_tutup').val(initialValues.jam_tutup);
+        $('input[name="hari_libur[]"]').prop('checked', false);
+        $.each(initialValues.hari_libur, function(index, value) {
+            $('input[name="hari_libur[]"][value="' + value + '"]').prop('checked', true);
         });
-        marker.setIcon(customIcon);
+        $('#lat').val(initialValues.lat);
+        $('#lng').val(initialValues.lng);
 
-        // Store initial form values
-        var initialValues = {
-            nama: $('input[name="nama"]').val(),
-            whatsapp: $('input[name="whatsapp"]').val(),
-            alamat: $('textarea[name="alamat"]').val(),
-            jasa_penjemputan: $('input[name="jasa_penjemputan"]:checked').val(),
-            jam_buka: $('#jam_buka').val(),
-            jam_tutup: $('#jam_tutup').val(),
-            hari_libur: $('input[name="hari_libur[]"]:checked').map(function() { return this.value; }).get(),
-            lat: $('#lat').val(),
-            lng: $('#lng').val()
-        };
+        marker.setLatLng([parseFloat(initialValues.lat), parseFloat(initialValues.lng)]);
+        map.setView([parseFloat(initialValues.lat), parseFloat(initialValues.lng)], 15);
+        marker.options.draggable = false;
+        marker.dragging.disable();
 
-        // Toggle edit mode
-        $('#editButton').on('click', function() {
-            $('#bengkelForm input, #bengkelForm textarea, #bengkelForm input[type="file"]').prop('readonly', false).prop('disabled', false);
-            marker.options.draggable = true;
-            marker.dragging.enable();
-            $('#saveButton').removeClass('d-none');
-            $('#cancelButton').removeClass('d-none');
-            $('#editButton').addClass('d-none');
-        });
+        $('#bengkelForm input, #bengkelForm textarea, #bengkelForm input[type="file"]').prop('readonly', true).prop('disabled', true);
+        $('#saveButton').addClass('d-none');
+        $('#cancelButton').addClass('d-none');
+        $('#editButton').removeClass('d-none');
+    });
 
-        // Cancel/Reset button
-        $('#cancelButton').on('click', function() {
-            $('input[name="nama"]').val(initialValues.nama);
-            $('input[name="whatsapp"]').val(initialValues.whatsapp);
-            $('textarea[name="alamat"]').val(initialValues.alamat);
-            $('input[name="jasa_penjemputan"][value="' + initialValues.jasa_penjemputan + '"]').prop('checked', true);
-            $('#jam_buka').val(initialValues.jam_buka);
-            $('#jam_tutup').val(initialValues.jam_tutup);
-            $('input[name="hari_libur[]"]').prop('checked', false);
-            $.each(initialValues.hari_libur, function(index, value) {
-                $('input[name="hari_libur[]"][value="' + value + '"]').prop('checked', true);
-            });
-            $('#lat').val(initialValues.lat);
-            $('#lng').val(initialValues.lng);
+    // Update lat/lng inputs when marker is dragged
+    marker.on('dragend', function(e) {
+        var lat = e.target.getLatLng().lat;
+        var lng = e.target.getLatLng().lng;
+        $('#lat').val(lat.toFixed(6));
+        $('#lng').val(lng.toFixed(6));
+        map.setView([lat, lng], 15);
+    });
 
-            marker.setLatLng([parseFloat(initialValues.lat), parseFloat(initialValues.lng)]);
-            map.setView([parseFloat(initialValues.lat), parseFloat(initialValues.lng)], 15);
-            marker.options.draggable = false;
-            marker.dragging.disable();
+    // Update marker position when lat/lng inputs change
+    $('#lat, #lng').on('input', function() {
+        var lat = parseFloat($('#lat').val());
+        var lng = parseFloat($('#lng').val());
+        if (!isNaN(lat) && !isNaN(lng)) {
+            marker.setLatLng([lat, lng]);
+            map.setView([lat, lng], 15);
+        }
+    });
 
-            $('#bengkelForm input, #bengkelForm textarea, #bengkelForm input[type="file"]').prop('readonly', true).prop('disabled', true);
-            $('#saveButton').addClass('d-none');
-            $('#cancelButton').addClass('d-none');
-            $('#editButton').removeClass('d-none');
-        });
-
-        // Update lat/lng inputs when marker is dragged
-        marker.on('dragend', function(e) {
-            var lat = e.target.getLatLng().lat;
-            var lng = e.target.getLatLng().lng;
+    // Click on map to place marker
+    map.on('click', function(e) {
+        if (marker.options.draggable) {
+            var lat = e.latlng.lat;
+            var lng = e.latlng.lng;
+            marker.setLatLng([lat, lng]);
             $('#lat').val(lat.toFixed(6));
             $('#lng').val(lng.toFixed(6));
             map.setView([lat, lng], 15);
-        });
-
-        // Update marker position when lat/lng inputs change
-        $('#lat, #lng').on('input', function() {
-            var lat = parseFloat($('#lat').val());
-            var lng = parseFloat($('#lng').val());
-            if (!isNaN(lat) && !isNaN(lng)) {
-                marker.setLatLng([lat, lng]);
-                map.setView([lat, lng], 15);
-            }
-        });
-
-        // Click on map to place marker
-        map.on('click', function(e) {
-            if (marker.options.draggable) {
-                var lat = e.latlng.lat;
-                var lng = e.latlng.lng;
-                marker.setLatLng([lat, lng]);
-                $('#lat').val(lat.toFixed(6));
-                $('#lng').val(lng.toFixed(6));
-                map.setView([lat, lng], 15);
-            }
-        });
-
-        // Form submission with AJAX
-        $('#bengkelForm').on('submit', function(e) {
-            e.preventDefault();
-
-            var jamBuka = $('#jam_buka').val();
-            var jamTutup = $('#jam_tutup').val();
-
-            // Validate WhatsApp
-            var whatsapp = $('input[name="whatsapp"]').val();
-            if (!/^[0-9+]{10,15}$/.test(whatsapp)) {
-                alert('Nomor WhatsApp tidak valid. Harap masukkan nomor dengan format yang benar (contoh: +628123456789).');
-                return;
-            }
-
-            // Format time inputs
-            if (jamBuka) {
-                jamBuka = jamBuka.substring(0, 5);
-                $('#jam_buka').val(jamBuka);
-            } else {
-                jamBuka = '{{ $bengkelTambalBan->jam_buka }}'.substring(0, 5);
-                $('#jam_buka').val(jamBuka);
-            }
-
-            if (jamTutup) {
-                jamTutup = jamTutup.substring(0, 5);
-                $('#jam_tutup').val(jamTutup);
-            } else {
-                jamTutup = '{{ $bengkelTambalBan->jam_tutup }}'.substring(0, 5);
-                $('#jam_tutup').val(jamTutup);
-            }
-
-            var formData = new FormData(this);
-
-            $.ajax({
-                url: $(this).attr('action'),
-                method: 'POST',
-                data: formData,
-                processData: false,
-                contentType: false,
-                success: function(response) {
-                    alert('Informasi bengkel berhasil diperbarui!');
-                    location.reload();
-                },
-                error: function(xhr) {
-                    console.log('Error Response:', xhr.responseJSON);
-                    alert('Terjadi kesalahan: ' + (xhr.responseJSON.message || 'Silakan coba lagi.'));
-                }
-            });
-        });
+        }
     });
+
+    // Form submission with AJAX
+    $('#bengkelForm').on('submit', function(e) {
+    e.preventDefault();
+
+    var jamBuka = $('#jam_buka').val();
+    var jamTutup = $('#jam_tutup').val();
+    var whatsapp = $('input[name="whatsapp"]').val();
+    var originalWhatsapp = $('input[name="whatsapp"]').data('original-whatsapp');
+
+    // Log the values for debugging
+    console.log('Submitted WhatsApp:', whatsapp);
+    console.log('Original WhatsApp:', originalWhatsapp);
+
+    // Validate WhatsApp on the client side to match backend
+    var whatsappCleaned = whatsapp.replace(/[^0-9+]/g, '');
+    if (!/^\+62[0-9]{9,12}$/.test(whatsappCleaned)) {
+        alert('Nomor WhatsApp harus dalam format +628123456789 (mulai dengan +62 diikuti 9-12 digit).');
+        $('input[name="whatsapp"]').val(originalWhatsapp); // Revert to original if invalid
+        return;
+    }
+
+    // Format time inputs
+    if (jamBuka) {
+        jamBuka = jamBuka.substring(0, 5);
+        $('#jam_buka').val(jamBuka);
+    } else {
+        jamBuka = '{{ $bengkelTambalBan->jam_buka }}'.substring(0, 5);
+        $('#jam_buka').val(jamBuka);
+    }
+
+    if (jamTutup) {
+        jamTutup = jamTutup.substring(0, 5);
+        $('#jam_tutup').val(jamTutup);
+    } else {
+        jamTutup = '{{ $bengkelTambalBan->jam_tutup }}'.substring(0, 5);
+        $('#jam_tutup').val(jamTutup);
+    }
+
+    var formData = new FormData(this);
+    formData.set('whatsapp', whatsapp); // Ensure the exact value is sent
+
+    // Log all form data
+    for (var pair of formData.entries()) {
+        console.log(pair[0] + ': ' + pair[1]);
+    }
+
+    $.ajax({
+        url: $(this).attr('action'),
+        method: 'POST',
+        data: formData,
+        processData: false,
+        contentType: false,
+        success: function(response) {
+            alert('Informasi bengkel berhasil diperbarui!');
+            location.reload();
+        },
+        error: function(xhr) {
+            console.log('Error Response:', xhr.responseJSON);
+            var errorMsg = xhr.responseJSON.message || 'Silakan coba lagi.';
+            if (xhr.responseJSON.errors && xhr.responseJSON.errors.whatsapp) {
+                errorMsg = xhr.responseJSON.errors.whatsapp[0];
+            }
+            alert('Terjadi kesalahan: ' + errorMsg);
+        }
+    });
+});
+});
+
 </script>
 
 <style>

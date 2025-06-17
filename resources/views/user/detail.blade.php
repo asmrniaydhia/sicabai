@@ -151,29 +151,42 @@
             </div>
         </div>
 
-        <!-- Daftar Barang dan Jasa (Hanya untuk Bengkel Service) -->
-        @if ($bengkel->jenis_bengkel === 'service')
-            <div class="card mb-5 border-0 shadow-sm" style="border-radius: 15px;">
-                <div class="card-body p-4">
-                    <div class="d-flex justify-content-between align-items-center mb-4">
-                        <h5 class="fw-bold text-dark"><i class="fas fa-tools me-2" style="color: #d9534f;"></i>Daftar Barang dan Jasa</h5>
-                        @if ($bengkel->barangs->count() > 0)
-                            <button class="btn btn-primary" style="background-color: #d9534f; border-color: #d9534f;" data-bs-toggle="modal" data-bs-target="#barangModal">
-                                <i class="fas fa-eye me-2"></i>Lihat Barang
-                            </button>
-                        @endif
-                    </div>
-                    @if ($bengkel->barangs->count() == 0)
-                        <div class="text-center py-5">
-                            <i class="fas fa-tools fa-3x text-muted mb-3"></i>
-                            <h5 class="text-muted">Tidak Ada Barang Tersedia</h5>
-                            <p class="text-muted">Bengkel ini belum memiliki daftar barang atau jasa.</p>
-                        </div>
+        <!-- Daftar Barang dan Jasa -->
+        <div class="card mb-5 border-0 shadow-sm" style="border-radius: 15px;">
+            <div class="card-body p-4">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h5 class="fw-bold text-dark"><i class="fas fa-tools me-2" style="color: #d9534f;"></i>
+                        {{ $bengkel->jenis_bengkel === 'tambal_ban' ? 'Daftar Jasa' : 'Daftar Barang dan Jasa' }}
+                    </h5>
+                    @if ($bengkel->jenis_bengkel === 'service' && $bengkel->barangs->count() > 0)
+                        <button class="btn btn-primary" style="background-color: #d9534f; border-color: #d9534f;" data-bs-toggle="modal" data-bs-target="#barangModal">
+                            <i class="fas fa-eye me-2"></i>Lihat Barang
+                        </button>
+                    @elseif ($bengkel->jenis_bengkel === 'tambal_ban' && $bengkel->jasaService->count() > 0)
+                        <button class="btn btn-primary" style="background-color: #d9534f; border-color: #d9534f;" data-bs-toggle="modal" data-bs-target="#jasaModal">
+                            <i class="fas fa-eye me-2"></i>Lihat Jasa
+                        </button>
                     @endif
                 </div>
-            </div>
 
-            <!-- Modal Barang -->
+                @if ($bengkel->jenis_bengkel === 'service' && $bengkel->barangs->count() == 0)
+                    <div class="text-center py-5">
+                        <i class="fas fa-tools fa-3x text-muted mb-3"></i>
+                        <h5 class="text-muted">Tidak Ada Barang Tersedia</h5>
+                        <p class="text-muted">Bengkel ini belum memiliki daftar barang atau jasa.</p>
+                    </div>
+                @elseif ($bengkel->jenis_bengkel === 'tambal_ban' && $bengkel->jasaService->count() == 0)
+                    <div class="text-center py-5">
+                        <i class="fas fa-tools fa-3x text-muted mb-3"></i>
+                        <h5 class="text-muted">Tidak Ada Jasa Tersedia</h5>
+                        <p class="text-muted">Bengkel ini belum memiliki daftar jasa.</p>
+                    </div>
+                @endif
+            </div>
+        </div>
+
+        <!-- Modal Barang (Untuk Bengkel Service) -->
+        @if ($bengkel->jenis_bengkel === 'service')
             <div class="modal fade" id="barangModal" tabindex="-1" aria-labelledby="barangModalLabel" aria-hidden="true">
                 <div class="modal-dialog modal-lg">
                     <div class="modal-content">
@@ -218,6 +231,53 @@
                                     <i class="fas fa-tools fa-3x text-muted mb-3"></i>
                                     <h5 class="text-muted">Tidak Ada Barang Tersedia</h5>
                                     <p class="text-muted">Bengkel ini belum memiliki daftar barang atau jasa.</p>
+                                </div>
+                            @endif
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        @endif
+
+        <!-- Modal Jasa (Untuk Bengkel Tambal Ban) -->
+        @if ($bengkel->jenis_bengkel === 'tambal_ban')
+            <div class="modal fade" id="jasaModal" tabindex="-1" aria-labelledby="jasaModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header" style="background-color: #d9534f; color: white;">
+                            <h5 class="modal-title" id="jasaModalLabel"><i class="fas fa-tools me-2"></i>Jasa Bengkel {{ $bengkel->nama }}</h5>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            @if ($bengkel->jasaService->count() > 0)
+                                <div class="table-responsive">
+                                    <table class="table table-hover align-middle">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th>Nama Jasa</th>
+                                                <th>Jenis Jasa</th>
+                                                <th>Harga Jasa (Rp)</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach ($bengkel->jasaService as $jasa)
+                                                <tr>
+                                                    <td>{{ $jasa->nama_jasa }}</td>
+                                                    <td>{{ $jasa->jasa ? $jasa->jasa->jenis_jasa : 'Tidak Diketahui' }}</td>
+                                                    <td>{{ number_format($jasa->harga_jasa, 2, ',', '.') }}</td>
+                                                </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
+                            @else
+                                <div class="text-center py-4">
+                                    <i class="fas fa-tools fa-3x text-muted mb-3"></i>
+                                    <h5 class="text-muted">Tidak Ada Jasa Tersedia</h5>
+                                    <p class="text-muted">Bengkel ini belum memiliki daftar jasa.</p>
                                 </div>
                             @endif
                         </div>

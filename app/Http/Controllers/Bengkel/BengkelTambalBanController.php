@@ -20,66 +20,59 @@ class BengkelTambalBanController extends Controller
     }
 
     public function update(Request $request, string $id)
-    {
-        // Clean the WhatsApp number
-        $request->merge([
-            'whatsapp' => preg_replace('/[^0-9]/', '', $request->whatsapp),
-        ]);
+{
+    // Log the raw input for debugging
+    Log::info('Raw WhatsApp Input: ' . $request->whatsapp);
 
-        // Ambil bengkel berdasarkan id dan id_user yang sedang login
-        $bengkel = Bengkel::where('id', $id)->where('id_user', Auth::id())->firstOrFail();
+    // Ambil bengkel berdasarkan id dan id_user yang sedang login
+    $bengkel = Bengkel::where('id', $id)->where('id_user', Auth::id())->firstOrFail();
 
-        // Validate the request
-        $validated = $request->validate([
-            'nama' => 'required|string|max:100',
-            'whatsapp' => 'required|regex:/^[0-9]{10,13}$/',
-            'foto_bengkel' => 'required|image|mimes:jpeg,png,jpg|max:2048',
-            'alamat' => 'required|string',
-            'jasa_penjemputan' => 'required|in:ada,tidak',
-            'jam_buka' => 'required|date_format:H:i',
-            'jam_tutup' => 'required|date_format:H:i|after:jam_buka',
-            'hari_libur' => 'nullable|array',
-            'hari_libur.*' => 'in:Senin,Selasa,Rabu,Kamis,Jumat,Sabtu,Minggu',
-            'lat' => 'required|numeric|between:-90,90',
-            'lng' => 'required|numeric|between:-180,180',
-        ]);
+    // Validate the request with strict WhatsApp format
+    $validated = $request->validate([
+        'nama' => 'required|string|max:100',
+        'whatsapp' => 'required|regex:/^\+62[0-9]{9,12}$/', // Must start with +62 followed by 9-12 digits
+        'foto_bengkel' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+        'alamat' => 'required|string',
+        'jasa_penjemputan' => 'required|in:ada,tidak',
+        'jam_buka' => 'required|date_format:H:i',
+        'jam_tutup' => 'required|date_format:H:i|after:jam_buka',
+        'hari_libur' => 'nullable|array',
+        'hari_libur.*' => 'in:Senin,Selasa,Rabu,Kamis,Jumat,Sabtu,Minggu',
+        'lat' => 'required|numeric|between:-90,90',
+        'lng' => 'required|numeric|between:-180,180',
+    ]);
 
-        // Konversi nomor WhatsApp ke format internasional
-        $whatsapp = $validated['whatsapp'];
-        if (preg_match('/^0/', $whatsapp)) {
-            $whatsapp = '+62' . substr(preg_replace('/[^0-9]/', '', $whatsapp), 1);
-        } elseif (!preg_match('/^\+/', $whatsapp)) {
-            $whatsapp = '+62' . preg_replace('/[^0-9]/', '', $whatsapp);
+    // No additional formatting; use the validated whatsapp as-is
+    $whatsapp = $validated['whatsapp'];
+
+    // Handle file upload jika ada file baru
+    $fotoPath = $bengkel->foto_bengkel;
+    if ($request->hasFile('foto_bengkel')) {
+        if ($bengkel->foto_bengkel) {
+            Storage::disk('public')->delete($bengkel->foto_bengkel);
         }
-
-        // Handle file upload jika ada file baru
-        $fotoPath = $bengkel->foto_bengkel;
-        if ($request->hasFile('foto_bengkel')) {
-            if ($bengkel->foto_bengkel) {
-                Storage::disk('public')->delete($bengkel->foto_bengkel);
-            }
-            $fotoPath = $request->file('foto_bengkel')->store('bengkel', 'public');
-        }
-
-        // Siapkan data untuk update
-        $updateData = [
-            'nama' => $validated['nama'],
-            'whatsapp' => $whatsapp,
-            'foto_bengkel' => $fotoPath,
-            'alamat' => $validated['alamat'],
-            'jasa_penjemputan' => $validated['jasa_penjemputan'],
-            'jam_buka' => $validated['jam_buka'],
-            'jam_tutup' => $validated['jam_tutup'],
-            'hari_libur' => $validated['hari_libur'] ?? [],
-            'latitude' => $validated['lat'],
-            'longitude' => $validated['lng'],
-        ];
-
-        // Lakukan update
-        $bengkel->update($updateData);
-
-        return response()->json(['message' => 'Bengkel berhasil diperbarui!'], 200);
+        $fotoPath = $request->file('foto_bengkel')->store('bengkel', 'public');
     }
+
+    // Siapkan data untuk update
+    $updateData = [
+        'nama' => $validated['nama'],
+        'whatsapp' => $whatsapp, // Use the validated whatsapp without modification
+        'foto_bengkel' => $fotoPath,
+        'alamat' => $validated['alamat'],
+        'jasa_penjemputan' => $validated['jasa_penjemputan'],
+        'jam_buka' => $validated['jam_buka'],
+        'jam_tutup' => $validated['jam_tutup'],
+        'hari_libur' => $validated['hari_libur'] ?? [],
+        'latitude' => $validated['lat'],
+        'longitude' => $validated['lng'],
+    ];
+
+    // Lakukan update
+    $bengkel->update($updateData);
+
+    return response()->json(['message' => 'Bengkel berhasil diperbarui!'], 200);
+}
 
     public function jasa(Request $request)
     {

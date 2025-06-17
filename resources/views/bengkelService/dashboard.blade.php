@@ -255,53 +255,70 @@
 
         // Form submission with AJAX
         $('#bengkelForm').on('submit', function(e) {
-            e.preventDefault();
+    e.preventDefault();
 
-            var jamBuka = $('#jam_buka').val();
-            var jamTutup = $('#jam_tutup').val();
+    var jamBuka = $('#jam_buka').val();
+    var jamTutup = $('#jam_tutup').val();
+    var whatsapp = $('input[name="whatsapp"]').val();
+    var originalWhatsapp = $('input[name="whatsapp"]').data('original-whatsapp');
 
-            // Validate WhatsApp
-            var whatsapp = $('input[name="whatsapp"]').val();
-            if (!/^[0-9+]{10,15}$/.test(whatsapp)) {
-                alert('Nomor WhatsApp tidak valid. Harap masukkan nomor dengan format yang benar (contoh: +628123456789).');
-                return;
+    // Log the values for debugging
+    console.log('Submitted WhatsApp:', whatsapp);
+    console.log('Original WhatsApp:', originalWhatsapp);
+
+    // Validate WhatsApp on the client side to match backend
+    var whatsappCleaned = whatsapp.replace(/[^0-9+]/g, '');
+    if (!/^\+62[0-9]{9,12}$/.test(whatsappCleaned)) {
+        alert('Nomor WhatsApp harus dalam format +628123456789 (mulai dengan +62 diikuti 9-12 digit).');
+        $('input[name="whatsapp"]').val(originalWhatsapp); // Revert to original if invalid
+        return;
+    }
+
+    // Format time inputs
+    if (jamBuka) {
+        jamBuka = jamBuka.substring(0, 5);
+        $('#jam_buka').val(jamBuka);
+    } else {
+        jamBuka = '{{ $bengkel->jam_buka }}'.substring(0, 5);
+        $('#jam_buka').val(jamBuka);
+    }
+
+    if (jamTutup) {
+        jamTutup = jamTutup.substring(0, 5);
+        $('#jam_tutup').val(jamTutup);
+    } else {
+        jamTutup = '{{ $bengkel->jam_tutup }}'.substring(0, 5);
+        $('#jam_tutup').val(jamTutup);
+    }
+
+    var formData = new FormData(this);
+    formData.set('whatsapp', whatsapp); // Ensure the exact value is sent
+
+    // Log all form data
+    for (var pair of formData.entries()) {
+        console.log(pair[0] + ': ' + pair[1]);
+    }
+
+    $.ajax({
+        url: $(this).attr('action'),
+        method: 'POST',
+        data: formData,
+        processData: false,
+        contentType: false,
+        success: function(response) {
+            alert('Informasi bengkel berhasil diperbarui!');
+            location.reload();
+        },
+        error: function(xhr) {
+            console.log('Error Response:', xhr.responseJSON);
+            var errorMsg = xhr.responseJSON.message || 'Silakan coba lagi.';
+            if (xhr.responseJSON.errors && xhr.responseJSON.errors.whatsapp) {
+                errorMsg = xhr.responseJSON.errors.whatsapp[0];
             }
-
-            // Format time inputs
-            if (jamBuka) {
-                jamBuka = jamBuka.substring(0, 5);
-                $('#jam_buka').val(jamBuka);
-            } else {
-                jamBuka = '{{ $bengkel->jam_buka }}'.substring(0, 5);
-                $('#jam_buka').val(jamBuka);
-            }
-
-            if (jamTutup) {
-                jamTutup = jamTutup.substring(0, 5);
-                $('#jam_tutup').val(jamTutup);
-            } else {
-                jamTutup = '{{ $bengkel->jam_tutup }}'.substring(0, 5);
-                $('#jam_tutup').val(jamTutup);
-            }
-
-            var formData = new FormData(this);
-
-            $.ajax({
-                url: $(this).attr('action'),
-                method: 'POST',
-                data: formData,
-                processData: false,
-                contentType: false,
-                success: function(response) {
-                    alert('Informasi bengkel berhasil diperbarui!');
-                    location.reload();
-                },
-                error: function(xhr) {
-                    console.log('Error Response:', xhr.responseJSON);
-                    alert('Terjadi kesalahan: ' + (xhr.responseJSON.message || 'Silakan coba lagi.'));
-                }
-            });
-        });
+            alert('Terjadi kesalahan: ' + errorMsg);
+        }
+    });
+});
     });
 </script>
 

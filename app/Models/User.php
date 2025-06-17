@@ -64,6 +64,6 @@ class User extends Authenticatable
 
     public function jasaService()
     {
-        return $this->hasMany(JasaService::class, 'jasa_id');
+        return $this->hasMany(JasaService::class, 'id_user');
     }
 }

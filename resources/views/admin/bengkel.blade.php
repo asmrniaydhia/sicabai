@@ -405,150 +405,114 @@
 
 <script>
 $(document).ready(function() {
-    // Initialize map
-    var map = L.map('map-canvas').setView([-3.320611, 114.591866], 13);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '© OpenStreetMap contributors',
-        maxZoom: 19
-    }).addTo(map);
-    map.invalidateSize(); // Ensure map renders properly
-
-    var userLocationFound = false;
-    var marker = L.marker([-3.320611, 114.591866], {
-        draggable: true
-    }).addTo(map);
-
-    // Geolocation
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-            function(position) {
-                var lat = position.coords.latitude;
-                var lng = position.coords.longitude;
-                map.setView([lat, lng], 15);
-                marker.setLatLng([lat, lng]);
-                $('#lat').val(lat.toFixed(6));
-                $('#lng').val(lng.toFixed(6));
-                userLocationFound = true;
-                console.log('Lokasi pengguna ditemukan:', lat, lng);
-            },
-            function(error) {
-                console.log('Auto-location error:', error.message);
-                map.setView([-3.320611, 114.591866], 13);
-                marker.setLatLng([-3.320611, 114.591866]);
-                $('#lat').val('-3.320611');
-                $('#lng').val('114.591866');
-            },
-            {
-                enableHighAccuracy: true,
-                timeout: 10000,
-                maximumAge: 60000
-            }
-        );
-    } else {
-        map.setView([-3.320611, 114.591866], 13);
-        marker.setLatLng([-3.320611, 114.591866]);
-        $('#lat').val('-3.320611');
-        $('#lng').val('114.591866');
-    }
-
-    // Update lat/lng on marker drag
-    marker.on('dragend', function(e) {
-        var lat = e.target.getLatLng().lat;
-        var lng = e.target.getLatLng().lng;
-        $('#lat').val(lat.toFixed(6));
-        $('#lng').val(lng.toFixed(6));
-    });
-
-    // Update marker on map click
-    map.on('click', function(e) {
-        var lat = e.latlng.lat;
-        var lng = e.latlng.lng;
-        marker.setLatLng([lat, lng]);
-        $('#lat').val(lat.toFixed(6));
-        $('#lng').val(lng.toFixed(6));
-    });
-
-    // Search functionality
-    var searchTimeout;
-    $('#searchmap').on('input', function() {
-        var query = $(this).val();
-        clearTimeout(searchTimeout);
-        if (query.length < 3) {
-            $('#search-suggestions').empty().removeClass('show');
+    // Initialize map with proper timing and container checks
+    function initMap() {
+        var mapContainer = document.getElementById('map-canvas');
+        if (!mapContainer) {
+            setTimeout(initMap, 100);
             return;
         }
-        searchTimeout = setTimeout(function() {
-            $.ajax({
-                url: 'https://nominatim.openstreetmap.org/search',
-                data: {
-                    q: query,
-                    format: 'json',
-                    limit: 5,
-                    countrycodes: 'id',
-                    addressdetails: 1
-                },
-                headers: {
-                    'User-Agent': 'YourAppName/1.0 (your.email@example.com)'
-                },
-                success: function(data) {
-                    $('#search-suggestions').empty();
-                    if (data.length > 0) {
-                        data.forEach(function(result) {
-                            var item = $('<a>', {
-                                class: 'dropdown-item',
-                                href: '#',
-                                text: result.display_name,
-                                'data-lat': parseFloat(result.lat).toFixed(6),
-                                'data-lng': parseFloat(result.lon).toFixed(6)
-                            });
-                            item.on('click', function(e) {
-                                e.preventDefault();
-                                var lat = $(this).data('lat');
-                                var lng = $(this).data('lng');
-                                map.setView([lat, lng], 15);
-                                marker.setLatLng([lat, lng]);
-                                $('#lat').val(lat);
-                                $('#lng').val(lng);
-                                $('#searchmap').val($(this).text());
-                                $('#search-suggestions').removeClass('show');
-                            });
-                            $('#search-suggestions').append(item);
-                        });
-                        $('#search-suggestions').addClass('show');
-                    } else {
-                        $('#search-suggestions').removeClass('show');
-                    }
-                },
-                error: function(xhr, status, error) {
-                    console.log('Error searching location:', error);
-                    $('#search-suggestions').removeClass('show');
-                }
-            });
-        }, 500);
-    });
 
-    // Hide suggestions on outside click
-    $(document).on('click', function(e) {
-        if (!$(e.target).closest('#searchmap, #search-suggestions').length) {
-            $('#search-suggestions').removeClass('show');
-        }
-    });
-
-    // Update marker on lat/lng input change
-    $('#lat, #lng').on('input', function() {
-        var lat = parseFloat($('#lat').val());
-        var lng = parseFloat($('#lng').val());
-        if (!isNaN(lat) && !isNaN(lng)) {
-            marker.setLatLng([lat, lng]);
-            map.setView([lat, lng], 15);
-        }
-    });
-
-    // Set initial coordinates if geolocation not found
-    if (!userLocationFound) {
-        $('#lat').val('-3.320611');
-        $('#lng').val('114.591866');
+        // Set initial coordinates from form or default
+        var initialLat = parseFloat($('#lat').val()) || -3.320611;
+        var initialLng = parseFloat($('#lng').val()) || 114.591866;
+        
+        // Initialize map
+        var map = L.map('map-canvas').setView([initialLat, initialLng], 15);
+        
+        // Add tile layer
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors',
+            maxZoom: 19
+        }).addTo(map);
+        
+        // Add draggable marker
+        var marker = L.marker([initialLat, initialLng], {
+            draggable: true
+        }).addTo(map);
+        
+        // Update form fields when marker is dragged
+        marker.on('dragend', function(e) {
+            var newLat = e.target.getLatLng().lat;
+            var newLng = e.target.getLatLng().lng;
+            $('#lat').val(newLat.toFixed(6));
+            $('#lng').val(newLng.toFixed(6));
+        });
+        
+        // Update marker position and form fields when map is clicked
+        map.on('click', function(e) {
+            marker.setLatLng(e.latlng);
+            $('#lat').val(e.latlng.lat.toFixed(6));
+            $('#lng').val(e.latlng.lng.toFixed(6));
+        });
+        
+        // Update map when form fields change
+        $('#lat, #lng').on('change', function() {
+            var lat = parseFloat($('#lat').val());
+            var lng = parseFloat($('#lng').val());
+            if (!isNaN(lat) && !isNaN(lng)) {
+                marker.setLatLng([lat, lng]);
+                map.setView([lat, lng], 15);
+            }
+        });
+        
+        // Force map to resize after a short delay
+        setTimeout(function() {
+            map.invalidateSize();
+        }, 200);
     }
+
+    // Initialize map after a short delay to ensure DOM is ready
+    setTimeout(initMap, 300);
+
+
+    // Filter and search functionality for bengkel table
+    function filterBengkelTable() {
+        var searchText = $('#searchInput').val().toLowerCase();
+        var jenisFilter = $('#jenisFilter').val();
+        var hasResults = false;
+
+        $('#bengkelTable tbody tr').each(function() {
+            var nama = $(this).data('nama');
+            var pemilik = $(this).data('pemilik');
+            var whatsapp = $(this).data('whatsapp');
+            var jenis = $(this).data('jenis');
+            
+            var matchesSearch = searchText === '' || 
+                nama.includes(searchText) || 
+                pemilik.includes(searchText) || 
+                whatsapp.includes(searchText);
+            
+            var matchesJenis = jenisFilter === '' || jenis === jenisFilter;
+            
+            if (matchesSearch && matchesJenis) {
+                $(this).show();
+                hasResults = true;
+            } else {
+                $(this).hide();
+            }
+        });
+
+        if (hasResults) {
+            $('#noResultsMessage').addClass('d-none');
+            $('#bengkelTable').removeClass('d-none');
+        } else {
+            $('#noResultsMessage').removeClass('d-none');
+            $('#bengkelTable').addClass('d-none');
+        }
+    }
+
+    // Event handlers for search and filter
+    $('#searchInput, #jenisFilter').on('input change', filterBengkelTable);
+    $('#searchButton').on('click', filterBengkelTable);
+    $('#resetFilter').on('click', function() {
+        $('#searchInput').val('');
+        $('#jenisFilter').val('');
+        filterBengkelTable();
+    });
+
+    // Initialize tooltips
+    $('[data-bs-toggle="tooltip"]').tooltip();
 });
 </script>
 
@@ -559,7 +523,7 @@ $(document).ready(function() {
     }
     .card:hover {
         transform: translateY(-5px);
-        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1) !important;
+        box-shadow: 0 10px 20px rgba(222, 26, 26, 0.1) !important;
     }
     .btn-primary {
         background-color: #1a73e8;
@@ -567,8 +531,8 @@ $(document).ready(function() {
         transition: background-color 0.3s ease, transform 0.2s ease;
     }
     .btn-primary:hover {
-        background-color: #1557b0;
-        border-color: #1557b0;
+        background-color: #b01515;
+        border-color: #b07215;
         transform: translateY(-2px);
     }
     .form-control:focus, .form-select:focus, textarea:focus {
