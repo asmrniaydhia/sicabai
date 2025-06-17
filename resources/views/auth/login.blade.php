@@ -195,7 +195,7 @@
                                     </div>
 
                                     <!-- Remember Me Checkbox -->
-                                    <div class="mb-4">
+                                    {{-- <div class="mb-4">
                                         <div class="form-check">
                                             <input type="checkbox" 
                                                    class="form-check-input" 
@@ -205,7 +205,7 @@
                                                 Ingat Saya
                                             </label>
                                         </div>
-                                    </div>
+                                    </div> --}}
 
                                     <!-- Login Button -->
                                     <button type="submit" class="btn btn-login w-100 mb-3">

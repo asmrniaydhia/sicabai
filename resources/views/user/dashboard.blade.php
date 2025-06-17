@@ -19,7 +19,7 @@
     <div class="card mb-5 border-0 shadow-sm" style="border-radius: 15px;">
         <div class="card-body p-4">
             <h5 class="fw-bold mb-4 text-dark"><i class="fas fa-filter me-2" style="color: #d9534f;"></i>Filter Bengkel</h5>
-            <form method="GET" action="{{ route('user.index') }}" class="row g-3">
+            <form method="GET" action="{{ route('user.dashboard') }}" class="row g-3">
                 <!-- Filter Jasa Penjemputan -->
                 <div class="col-md-4">
                     <label for="jasa_penjemputan" class="form-label fw-medium">Jasa Penjemputan</label>
@@ -51,7 +51,7 @@
                     <button type="submit" class="btn btn-primary" style="background-color: #d9534f; border-color: #d9534f;">
                         <i class="fas fa-search me-2"></i>Terapkan Filter
                     </button>
-                    <a href="{{ route('user.index') }}" class="btn btn-secondary">
+                    <a href="{{ route('user.dashboard') }}" class="btn btn-secondary">
                         <i class="fas fa-sync-alt me-2"></i>Reset Filter
                     </a>
                 </div>

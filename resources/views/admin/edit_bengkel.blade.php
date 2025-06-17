@@ -4,7 +4,7 @@
 <div class="container-fluid">
     <div class="row mb-4">
         <div class="col-12">
-            <div class="card border-0 bg-primary text-white">
+            <div class="card border-0 bg-danger text-white">
                 <div class="card-body text-center">
                     <h2><i class="fas fa-store me-2"></i>Edit Data Bengkel</h2>
                     <p class="mb-0">Perbarui data bengkel {{ $bengkel->nama }}</p>
@@ -35,7 +35,7 @@
     <div class="row justify-content-center">
         <div class="col-xl-8 col-lg-10">
             <div class="card">
-                <div class="card-header bg-warning text-white">
+                <div class="card-header bg-danger text-white">
                     <h5 class="mb-0"><i class="fas fa-edit me-2"></i>Form Edit Bengkel</h5>
                 </div>
                 <div class="card-body">

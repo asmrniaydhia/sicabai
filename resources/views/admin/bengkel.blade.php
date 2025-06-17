@@ -7,7 +7,7 @@
     <!-- Header -->
     <div class="row mb-5">
         <div class="col-12">
-            <div class="card border-0 shadow-sm bg-dark text-white rounded-3">
+            <div class="card border-0 shadow-sm bg-danger text-white rounded-3">
                 <div class="card-body text-center py-4">
                     <h2 class="fw-bold"><i class="fas fa-tools me-2"></i>Manajemen Bengkel</h2>
                     <p class="mb-0 text-light">Kelola data bengkel service dan tambal ban dengan mudah</p>
@@ -47,7 +47,7 @@
         <!-- Form Tambah Bengkel -->
         <div class="col-xl-6 col-lg-6 mb-4">
             <div class="card h-100 border-0 shadow-lg rounded-3">
-                <div class="card-header bg-primary text-white rounded-top-3">
+                <div class="card-header bg-danger text-white rounded-top-3">
                     <h5 class="mb-0 fw-bold"><i class="fas fa-store-plus me-2"></i>Tambah Bengkel Baru</h5>
                 </div>
                 <div class="card-body p-4">
@@ -247,7 +247,7 @@
         <!-- Daftar Bengkel -->
         <div class="col-xl-6 col-lg-6">
             <div class="card border-0 shadow-lg rounded-3">
-                <div class="card-header bg-dark text-white rounded-top-3">
+                <div class="card-header bg-danger text-white rounded-top-3">
                     <h5 class="mb-3 fw-bold"><i class="fas fa-list me-2"></i>Daftar Bengkel</h5>
                     <!-- Search and Filter Controls -->
                     <div class="row g-3">
@@ -279,7 +279,6 @@
                             <thead class="table-light">
                                 <tr>
                                     <th width="5%">No</th>
-                                    <th width="10%">Foto</th>
                                     <th width="20%">Nama Bengkel</th>
                                     <th width="15%">Pemilik</th>
                                     <th width="10%">Jenis</th>
@@ -296,19 +295,6 @@
                                     data-pemilik="{{ strtolower($bengkel->user->name ?? '') }}" 
                                     data-whatsapp="{{ $bengkel->whatsapp }}">
                                     <td class="text-center">{{ $bengkels->firstItem() + $index }}</td>
-                                    <td>
-                                        @if($bengkel->foto_bengkel && Storage::disk('public')->exists($bengkel->foto_bengkel))
-                                            <img src="{{ asset('storage/'.$bengkel->foto_bengkel) }}" 
-                                                alt="Foto Bengkel" 
-                                                class="img-thumbnail rounded-3" 
-                                                style="width: 60px; height: 60px; object-fit: cover;">
-                                        @else
-                                            <img src="{{ asset('images/default-bengkel.jpg') }}" 
-                                                alt="Foto Default" 
-                                                class="img-thumbnail rounded-3" 
-                                                style="width: 60px; height: 60px; object-fit: cover;">
-                                        @endif
-                                    </td>
                                     <td>
                                         <strong>{{ $bengkel->nama }}</strong><br>
                                         <small class="text-muted">{{ \Carbon\Carbon::parse($bengkel->jam_buka)->format('H:i') }} - {{ \Carbon\Carbon::parse($bengkel->jam_tutup)->format('H:i') }}</small>
@@ -575,5 +561,8 @@ $(document).ready(function() {
     .alert-danger {
         border-color: #dc3545;
     }
+    .bg-danger {
+        background-color:rgb(236, 60, 60) !important; /* Dark red color */
+    }
 </style>
 @endsection

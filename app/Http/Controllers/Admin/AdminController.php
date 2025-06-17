@@ -21,44 +21,46 @@ class AdminController extends Controller
     /**
      * Display the admin dashboard with statistics
      */
-    public function index()
-    {
-        try {
-            $totalUsers = User::count();
-            $totalAdmins = User::where('usertype', 'admin')->count();
-            $totalRegularUsers = User::where('usertype', 'user')->count();
-            $totalSpareparts = Sparepart::count();
-            $totalBengkels = Bengkel::count() ?? 0;
-            
-            $userRegistrationData = User::select(
-                DB::raw('YEAR(created_at) as year'),
-                DB::raw('MONTH(created_at) as month'),
-                DB::raw('COUNT(*) as count')
-            )
-            ->groupBy('year', 'month')
-            ->orderBy('year', 'desc')
-            ->orderBy('month', 'desc')
-            ->limit(12)
-            ->get();
+   public function index()
+{
+    try {
+        $totalUsers = User::count();
+        $totalAdmins = User::where('usertype', 'admin')->count();
+        $totalRegularUsers = User::where('usertype', 'user')->count();
+        $totalSpareparts = Sparepart::count();
+        $totalBengkels = Bengkel::count() ?? 0;
+        $totalJasa = Jasa::count() ?? 0; // Tambahkan query untuk total jasa
 
-            $recentUsers = User::latest()->limit(5)->get();
-            $recentSpareparts = Sparepart::latest()->limit(5)->get();
+        $userRegistrationData = User::select(
+            DB::raw('YEAR(created_at) as year'),
+            DB::raw('MONTH(created_at) as month'),
+            DB::raw('COUNT(*) as count')
+        )
+        ->groupBy('year', 'month')
+        ->orderBy('year', 'desc')
+        ->orderBy('month', 'desc')
+        ->limit(12)
+        ->get();
 
-            return view('admin.dashboard', compact(
-                'totalUsers', 
-                'totalAdmins', 
-                'totalRegularUsers', 
-                'totalSpareparts',
-                'totalBengkels',
-                'userRegistrationData',
-                'recentUsers',
-                'recentSpareparts'
-            ));
-        } catch (\Exception $e) {
-            Log::error('Dashboard error: ' . $e->getMessage());
-            return view('admin.dashboard')->with('error', 'Terjadi kesalahan dalam memuat dashboard');
-        }
+        $recentUsers = User::latest()->limit(5)->get();
+        $recentSpareparts = Sparepart::latest()->limit(5)->get();
+
+        return view('admin.dashboard', compact(
+            'totalUsers',
+            'totalAdmins',
+            'totalRegularUsers',
+            'totalSpareparts',
+            'totalBengkels',
+            'totalJasa', // Tambahkan variabel ini ke view
+            'userRegistrationData',
+            'recentUsers',
+            'recentSpareparts'
+        ));
+    } catch (\Exception $e) {
+        Log::error('Dashboard error: ' . $e->getMessage());
+        return view('admin.dashboard')->with('error', 'Terjadi kesalahan dalam memuat dashboard');
     }
+}
 
     /**
      * Display sparepart list with search and pagination
